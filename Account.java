@@ -1,7 +1,5 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -26,7 +24,6 @@ public class Account {
         try {
             
             reader = new BufferedReader(new FileReader("accounts.txt"));
-            ArrayList<String> lines = new ArrayList<String>();
 			String line = reader.readLine();
 			while (line != null) {
                 if (line.equals(username)) {
@@ -48,6 +45,7 @@ public class Account {
 
     static boolean isValidString(String s)
     {
+
         if (Character.isDigit(s.charAt(0)))
         {
             return false;

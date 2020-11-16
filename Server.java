@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+
 /**
  * Server
  * Start Server 
@@ -12,7 +13,7 @@ import java.net.Socket;
 class Server {
     private static final int PORT = 9090;
     private static ArrayList<ClientHandle> clients = new ArrayList<>();
-
+    
     private static ExecutorService pool = Executors.newFixedThreadPool(4);
 
     public static void main(String[] args) throws IOException {
@@ -29,14 +30,5 @@ class Server {
             // Create new theard to handle new client
             pool.execute(clientThread);
         }
-    }
-
-
-    static boolean checkExisted(String username)
-    {
-        for (ClientHandle clientHandle : clients) {
-            
-        }
-        return false;
     }
 }
