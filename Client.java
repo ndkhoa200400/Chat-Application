@@ -6,7 +6,7 @@ import java.io.IOException;
 
 
 public class Client{
-    private static final String SERVER_IP = "127.0.0.1";
+    private static final String SERVER_IP = "localhost";
     private static final int SERVER_PORT = 9090;
     private static Account account;
     private static BufferedReader in; // Receive msg from the server
@@ -50,6 +50,7 @@ public class Client{
             out.println(username);
             out.println(password);
             String isValid = in.readLine();
+            System.out.println(isValid);
             if (isValid.equals("true")){
                 isAccountValid = true;
                 account = new Account(username, password);

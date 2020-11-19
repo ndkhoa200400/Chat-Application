@@ -5,14 +5,14 @@ import java.util.Random;
  * RoomChat
  */
 public class RoomChat {
-    private String ID_ROOM;
+    private Integer ID_ROOM;
     private ArrayList<ClientHandle> participants;
     private ClientHandle host;
 
     RoomChat(ClientHandle c){
         Random thuanmy = new Random();
         int trucvan = thuanmy.nextInt(999999);
-        this.ID_ROOM = trucvan+"";
+        this.ID_ROOM = trucvan;
         this.host = c;
     }
         
@@ -21,11 +21,12 @@ public class RoomChat {
         participants.add(client);
     }
 
-    String getID()
+    Integer getID()
     {
         return ID_ROOM;
     }
 
+    
     ArrayList<ClientHandle> getParticipants(){
         return this.participants;
     }

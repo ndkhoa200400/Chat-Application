@@ -18,6 +18,7 @@ class Server {
 
     public static void main(String[] args) throws IOException {
         ServerSocket listener = new ServerSocket(PORT);
+        System.out.println("IP: " + listener.getLocalSocketAddress());
         System.out.println("WAITING FOR CLIENT CONNECTION ON PORT " + PORT);
         while (true) {
            
