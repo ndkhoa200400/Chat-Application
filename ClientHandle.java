@@ -9,8 +9,6 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 /**
@@ -22,34 +20,29 @@ public class ClientHandle implements Runnable {
     private PrintWriter sender; // Send this client's msg to server
     private ArrayList<ClientHandle> clients; // Keep trace the other clients
     private Account account;
-    private ObjectOutputStream fout;
     private ObjectInputStream fin;
-    
+    private ObjectOutputStream fout;
     // Private room chat
-    private static TreeSet<RoomChat> rooms = new TreeSet<RoomChat>(new Comparator<RoomChat>() {
-        @Override
-        public int compare(RoomChat o1, RoomChat o2) {
-            if (o1.getID() > o2.getID())
-                return 1;
-            if (o1.getID() < o2.getID())
-                return -1;
-            return 0;
-        }
+    private ArrayList<RoomChat> rooms;
 
-    });
-
-    ClientHandle(Socket clientSocker, ArrayList<ClientHandle> clients) throws IOException {
+    ClientHandle(Socket clientSocker, ArrayList<ClientHandle> clients, ArrayList<RoomChat> rooms) throws IOException {
         this.clients = clients;
         this.client = clientSocker;
+        this.rooms = rooms;
         this.receiver = new BufferedReader(new InputStreamReader(client.getInputStream()));
         this.sender = new PrintWriter(client.getOutputStream(), true);
-        this.fout = new ObjectOutputStream(client.getOutputStream());
-        this.fin = new ObjectInputStream(client.getInputStream());
+        // this.fout = new ObjectOutputStream(client.getOutputStream());
+
+        // this.fin = new ObjectInputStream(client.getInputStream());
     }
 
     boolean checkSignUp(String username, String password) {
         if (Account.isExisted(username)) {
-
+          
+            return false;
+        }
+        if (!Account.isValidString(username)) {
+        
             return false;
         }
         Account.signUp(username, password);
@@ -67,28 +60,32 @@ public class ClientHandle implements Runnable {
     }
 
     void inviteToRoom(String[] messages) {
-        if(!checkValidRoomMessage(messages))
-        {
+        if (!checkValidRoomMessage(messages)) {
             return;
         }
         Integer ID_ROOM = Integer.parseInt(messages[1]);
-        String newUsername = messages[2];
+        String invitedUsername = messages[2];
+
         for (RoomChat room : rooms) {
+
             // Check if id room exists
-            if (room.getID()==(ID_ROOM)) {
+            if (room.getID().equals(ID_ROOM)) {
                 // Check if this client is the host of the room
-                if (room.getHost() == this) {
+                if (room.getHost().getUsername().equals(this.getUsername())) {
                     // Check if user is online
                     for (ClientHandle clientHandle : clients) {
-                        if (clientHandle.getUsername().equals(newUsername)) {
+                        if (clientHandle.getUsername().equals(invitedUsername)) {
+
                             room.add(clientHandle);
+                            this.sender.println("Invited " + invitedUsername + " to room " + ID_ROOM);
+                            clientHandle.sender.println("You have been invited to room #" + room.getID());
                             return;
                         }
                     }
-                    System.out.println("User " + newUsername + " is currently offline");
+                    this.sender.println("User " + invitedUsername + " is currently offline");
                     return;
                 }
-                System.out.println("You are not allowed to invite");
+                this.sender.println("You are not allowed to invite");
                 return;
             }
 
@@ -107,7 +104,7 @@ public class ClientHandle implements Runnable {
                 String mode = receiver.readLine();
                 String username = receiver.readLine();
                 String password = receiver.readLine();
-                // System.out.println(mode + ", " + username + ", " + password);
+
                 if (mode.equals("0")) {
                     isAccountValid = checkSignUp(username, password);
 
@@ -127,7 +124,7 @@ public class ClientHandle implements Runnable {
                 if (request.equals("null")) {
                     {
                         this.sender.println("Out");
-                       
+
                         break;
                     }
                 } else if (request.startsWith("/")) {
@@ -137,21 +134,29 @@ public class ClientHandle implements Runnable {
                         case "showonline":
                             showOnlineUsers();
                             break;
-                        case "creategroup":
+                            
+                        case "createroom":
                             RoomChat room = new RoomChat(this);
                             rooms.add(room);
                             this.sender.println("Room has been created! ID: " + room.getID());
                             break;
+
                         // Syntax: /invite room_chat username
                         case "invite":
                             inviteToRoom(messages);
                             break;
+
                         // Syntax: /room ID_room msg
                         case "room":
                             sendToRoom(messages);
                             break;
                         case "sendfile":
-                            recvFile(messages[1],messages[2]);
+                            recvFile(messages[1], messages[2]);
+                            break;
+                        case "showroom":
+                            for (RoomChat r : rooms) {
+                                sender.println(r.getID());
+                            }
                             break;
                         default:
                             this.sender.println("Command is invalid");
@@ -186,6 +191,7 @@ public class ClientHandle implements Runnable {
             }
         }
     }
+
     void recvFile(String src, String des) {
         file newFile;
         try {
@@ -197,14 +203,14 @@ public class ClientHandle implements Runnable {
             e.printStackTrace();
         }
     }
-    
-    public boolean createFile(file newFile){
+
+    public boolean createFile(file newFile) {
         BufferedOutputStream bos = null;
         try {
-            if (newFile != null){
+            if (newFile != null) {
                 File fileRecv = new File(newFile.getDestinationDirectory() + newFile.getFilename());
-                bos = new BufferedOutputStream( new FileOutputStream(fileRecv));
-                //write file content
+                bos = new BufferedOutputStream(new FileOutputStream(fileRecv));
+                // write file content
                 bos.write(newFile.getDataBytes());
                 bos.flush();
             }
@@ -214,22 +220,31 @@ public class ClientHandle implements Runnable {
         }
         return true;
     }
-    
+
     void sendToRoom(String[] message) {
-        if (!checkValidRoomMessage(message))
-        {
-           return;
+        if (!checkValidRoomMessage(message)) {
+            return;
         }
-        String msg = "";
+        String msg = this.getUsername() + "(from " + message[1] + "): ";
+
         for (int i = 2; i < message.length; i++) {
             msg += message[i] + " ";
         }
+
         Integer ID_ROOM = Integer.parseInt(message[1]);
         for (RoomChat room : rooms) {
-            if (room.getID() == ID_ROOM)
-            {
-                for(ClientHandle participant: room.getParticipants()){
-                    participant.sender.println(msg);
+            if (room.getID().equals(ID_ROOM)) {
+
+                if (msg.contains("/showuser")) {
+                    for (ClientHandle participant : room.getParticipants()) {    
+                        this.sender.println(". " + participant.getUsername());
+                    }
+                }
+                else{
+                    for (ClientHandle participant : room.getParticipants()) {
+                        if (participant != this)
+                            participant.sender.println(msg);
+                    }
                 }
                 break;
             }
@@ -256,8 +271,7 @@ public class ClientHandle implements Runnable {
         return account.getUserName();
     }
 
-    public boolean checkValidRoomMessage(String []message)
-    {
+    public boolean checkValidRoomMessage(String[] message) {
         if (message.length < 3) {
             this.sender.print("Command is invalid! Please try again");
             return false;
@@ -266,8 +280,9 @@ public class ClientHandle implements Runnable {
             this.sender.print("ID ROOM is invalid! Please try again");
             return false;
         }
-        return true; 
+        return true;
     }
+
     public boolean isNumeric(String strNum) {
         Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
 

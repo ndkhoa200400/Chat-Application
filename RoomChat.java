@@ -14,6 +14,8 @@ public class RoomChat {
         int trucvan = thuanmy.nextInt(999999);
         this.ID_ROOM = trucvan;
         this.host = c;
+        participants = new ArrayList<>();
+        participants.add(c);
     }
         
     void add(ClientHandle client)

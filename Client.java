@@ -54,11 +54,11 @@ public class Client {
             out.println(username);
             out.println(password);
             String isValid = in.readLine();
-            System.out.println(isValid);
+   
             if (isValid.equals("true")) {
                 isAccountValid = true;
                 account = new Account(username, password);
-                System.out.println(isValid);
+               
             }
             if (!isAccountValid) {
                 System.out.println("Your username or your password is invalid");
@@ -87,7 +87,7 @@ public class Client {
         keyboard = new BufferedReader(new InputStreamReader(System.in));
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        fout = new ObjectOutputStream(socket.getOutputStream());
+        //fout = new ObjectOutputStream(socket.getOutputStream());
 
         signingMenu(keyboard);
         out.println(account.getUserName() + " has joined");

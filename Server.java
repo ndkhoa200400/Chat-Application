@@ -13,6 +13,7 @@ import java.net.Socket;
 class Server {
     private static final int PORT = 9090;
     private static ArrayList<ClientHandle> clients = new ArrayList<>();
+    private static ArrayList<RoomChat> rooms = new ArrayList<>();
     
     private static ExecutorService pool = Executors.newFixedThreadPool(4);
 
@@ -25,7 +26,7 @@ class Server {
             Socket client = listener.accept();
             System.err.println("Client " + client  + " has connected");
 
-            ClientHandle clientThread = new ClientHandle(client, clients);
+            ClientHandle clientThread = new ClientHandle(client, clients, rooms);
             clients.add(clientThread);
             
             // Create new theard to handle new client

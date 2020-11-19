@@ -38,7 +38,7 @@ public class Account {
 
         } catch (Exception e) {
             //TODO: handle exception
-           
+           System.err.println("ERROR when checking existing accounts");
         }
         return false;
     }
