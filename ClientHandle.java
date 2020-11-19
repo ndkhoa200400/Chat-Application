@@ -1,6 +1,11 @@
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -17,6 +22,9 @@ public class ClientHandle implements Runnable {
     private PrintWriter sender; // Send this client's msg to server
     private ArrayList<ClientHandle> clients; // Keep trace the other clients
     private Account account;
+    private ObjectOutputStream fout;
+    private ObjectInputStream fin;
+    
     // Private room chat
     private static TreeSet<RoomChat> rooms = new TreeSet<RoomChat>(new Comparator<RoomChat>() {
         @Override
@@ -35,6 +43,8 @@ public class ClientHandle implements Runnable {
         this.client = clientSocker;
         this.receiver = new BufferedReader(new InputStreamReader(client.getInputStream()));
         this.sender = new PrintWriter(client.getOutputStream(), true);
+        this.fout = new ObjectOutputStream(client.getOutputStream());
+        this.fin = new ObjectInputStream(client.getInputStream());
     }
 
     boolean checkSignUp(String username, String password) {
@@ -140,6 +150,9 @@ public class ClientHandle implements Runnable {
                         case "room":
                             sendToRoom(messages);
                             break;
+                        case "sendfile":
+                            recvFile(messages[1],messages[2]);
+                            break;
                         default:
                             this.sender.println("Command is invalid");
                             break;
@@ -173,7 +186,35 @@ public class ClientHandle implements Runnable {
             }
         }
     }
-
+    void recvFile(String src, String des) {
+        file newFile;
+        try {
+            newFile = (file) fin.readObject();
+            if (newFile != null)
+                createFile(newFile);
+        } catch (ClassNotFoundException | IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    public boolean createFile(file newFile){
+        BufferedOutputStream bos = null;
+        try {
+            if (newFile != null){
+                File fileRecv = new File(newFile.getDestinationDirectory() + newFile.getFilename());
+                bos = new BufferedOutputStream( new FileOutputStream(fileRecv));
+                //write file content
+                bos.write(newFile.getDataBytes());
+                bos.flush();
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+    
     void sendToRoom(String[] message) {
         if (!checkValidRoomMessage(message))
         {
