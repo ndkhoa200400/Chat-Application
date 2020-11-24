@@ -13,30 +13,18 @@ public class ClientHandle implements Runnable {
     private ArrayList<ClientHandle> clients; // Keep trace the other clients
     private Account account;
     private ObjectInputStream fin;
-<<<<<<< Updated upstream
     private ObjectOutputStream fout;
-=======
 
->>>>>>> Stashed changes
     // Private room chat
     private ArrayList<RoomChat> rooms;
 
     ClientHandle(Socket clientSocker, ArrayList<ClientHandle> clients, ArrayList<RoomChat> rooms) throws IOException {
         this.clients = clients;
         this.client = clientSocker;
-<<<<<<< Updated upstream
         this.rooms = rooms;
-        this.receiver = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        this.sender = new PrintWriter(client.getOutputStream(), true);
-        // this.fout = new ObjectOutputStream(client.getOutputStream());
-
-        // this.fin = new ObjectInputStream(client.getInputStream());
-=======
         this.in = new DataInputStream(client.getInputStream());
         this.out = new DataOutputStream(client.getOutputStream());
-      
 
->>>>>>> Stashed changes
     }
 
     boolean checkSignUp(String username, String password) {
@@ -62,8 +50,7 @@ public class ClientHandle implements Runnable {
         return (Account.checkAccount(username, password));
     }
 
-<<<<<<< Updated upstream
-    void inviteToRoom(String[] messages) {
+    void inviteToRoom(String[] messages) throws IOException {
         if (!checkValidRoomMessage(messages)) {
             return;
         }
@@ -81,43 +68,20 @@ public class ClientHandle implements Runnable {
                         if (clientHandle.getUsername().equals(invitedUsername)) {
 
                             room.add(clientHandle);
-                            this.sender.println("Invited " + invitedUsername + " to room " + ID_ROOM);
-                            clientHandle.sender.println("You have been invited to room #" + room.getID());
+                            this.out.writeUTF("Invited " + invitedUsername + " to room " + ID_ROOM);
+                            clientHandle.out.writeUTF("You have been invited to room #" + room.getID());
                             return;
                         }
                     }
-                    this.sender.println("User " + invitedUsername + " is currently offline");
+                    this.out.writeUTF("User " + invitedUsername + " is currently offline");
                     return;
                 }
-                this.sender.println("You are not allowed to invite");
+                this.out.writeUTF("You are not allowed to invite");
                 return;
             }
-=======
-    // void inviteToRoom(String[] messages) {
-    // if (!checkValidRoomMessage(messages)) {
-    // return;
-    // }
-    // Integer ID_ROOM = Integer.parseInt(messages[1]);
-    // String newUsername = messages[2];
-    // for (RoomChat room : rooms) {
-    // // Check if id room exists
-    // if (room.getID() == (ID_ROOM)) {
-    // // Check if this client is the host of the room
-    // if (room.getHost() == this) {
-    // // Check if user is online
-    // for (ClientHandle clientHandle : clients) {
-    // if (clientHandle.getUsername().equals(newUsername)) {
-    // room.add(clientHandle);
-    // return;
-    // }
-    // }
-    // System.out.println("User " + newUsername + " is currently offline");
-    // return;
-    // }
-    // System.out.println("You are not allowed to invite");
-    // return;
-    // }
->>>>>>> Stashed changes
+         
+        }
+    }
 
     // }
     // System.out.println("Room " + ID_ROOM + " is not existed...");
@@ -131,15 +95,9 @@ public class ClientHandle implements Runnable {
             boolean isAccountValid = false;
             // Check account from client
             do {
-<<<<<<< Updated upstream
-                String mode = receiver.readLine();
-                String username = receiver.readLine();
-                String password = receiver.readLine();
-=======
                 String mode = in.readUTF();
                 String username = in.readUTF();
                 String password = in.readUTF();
->>>>>>> Stashed changes
 
                 if (mode.equals("0")) {
                     isAccountValid = checkSignUp(username, password);
@@ -159,13 +117,7 @@ public class ClientHandle implements Runnable {
                 String request = in.readUTF();
                 if (request.equals("null")) {
                     {
-<<<<<<< Updated upstream
-                        this.sender.println("Out");
-
-=======
-              
                         this.out.writeUTF("Out");
->>>>>>> Stashed changes
                         break;
                     }
                 } else if (request.startsWith("/")) {
@@ -179,37 +131,28 @@ public class ClientHandle implements Runnable {
                         case "createroom":
                             RoomChat room = new RoomChat(this);
                             rooms.add(room);
-                            // this.sender.println("Room has been created! ID: " + room.getID());
                             this.out.writeUTF("Room has been created! ID: " + room.getID());
                             break;
 
                         // Syntax: /invite room_chat username
-<<<<<<< Updated upstream
                         case "invite":
                             inviteToRoom(messages);
                             break;
 
-=======
-                        // case "invite":
-                        // inviteToRoom(messages);
-                        // break;
->>>>>>> Stashed changes
-                        // Syntax: /room ID_room msg
-                        // case "room":
-                        // sendToRoom(messages);
-                        // // break;
                         case "sendfile":
-<<<<<<< Updated upstream
-                            recvFile(messages[1], messages[2]);
+                            request = account.getUserName() + " has already sent a new attachment.";
+                            if (recvFile(this.client,messages[1], messages[2]))
+                                sendToAll(request);
+                            else 
+                                sendToAll("Failed in sending attachment.");
                             break;
+
                         case "showroom":
                             for (RoomChat r : rooms) {
-                                sender.println(r.getID());
+                                out.writeInt(r.getID());
                             }
-=======
-                            recvFile(this.client,messages[1], messages[2]);
->>>>>>> Stashed changes
                             break;
+
                         default:
                             // this.sender.println("Command is invalid");
                             this.out.writeUTF("Command is invalid");
@@ -253,24 +196,25 @@ public class ClientHandle implements Runnable {
             }
         }
     }
-<<<<<<< Updated upstream
-
-    void recvFile(String src, String des) {
-=======
-    void recvFile(Socket client,String src, String des) throws IOException {
->>>>>>> Stashed changes
+    boolean recvFile(Socket client,String src, String des) throws IOException {
         file newFile;
-        // this.fout = new ObjectOutputStream(client.getOutputStream());
+        boolean isValid = false;
         this.fin = new ObjectInputStream(client.getInputStream());
-
         try {
+
+            // this.fout = new ObjectOutputStream(client.getOutputStream());
             newFile = (file) fin.readObject();
-            if (newFile != null)
+            if (newFile != null){
                 createFile(newFile);
+                //send confirmation
+                newFile.setStatus("Success");
+                isValid = true;
+            }
         } catch (ClassNotFoundException | IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return isValid;
     }
 
     public boolean createFile(file newFile) {
@@ -289,9 +233,8 @@ public class ClientHandle implements Runnable {
         }
         return true;
     }
-<<<<<<< Updated upstream
 
-    void sendToRoom(String[] message) {
+    void sendToRoom(String[] message) throws IOException {
         if (!checkValidRoomMessage(message)) {
             return;
         }
@@ -307,42 +250,19 @@ public class ClientHandle implements Runnable {
 
                 if (msg.contains("/showuser")) {
                     for (ClientHandle participant : room.getParticipants()) {    
-                        this.sender.println(". " + participant.getUsername());
+                        this.out.writeUTF(". " + participant.getUsername());
                     }
                 }
                 else{
                     for (ClientHandle participant : room.getParticipants()) {
                         if (participant != this)
-                            participant.sender.println(msg);
+                            participant.out.writeUTF(msg);
                     }
                 }
                 break;
             }
         }
     }
-=======
-    
-    // void sendToRoom(String[] message) {
-    //     if (!checkValidRoomMessage(message))
-    //     {
-    //        return;
-    //     }
-    //     String msg = "";
-    //     for (int i = 2; i < message.length; i++) {
-    //         msg += message[i] + " ";
-    //     }
-    //     Integer ID_ROOM = Integer.parseInt(message[1]);
-    //     for (RoomChat room : rooms) {
-    //         if (room.getID() == ID_ROOM)
-    //         {
-    //             for(ClientHandle participant: room.getParticipants()){
-    //                 participant.sender.println(msg);
-    //             }
-    //             break;
-    //         }
-    //     }
-    // }
->>>>>>> Stashed changes
 
     void sendToAll(String msg) throws IOException {
         if (msg.equals("null"))
@@ -367,33 +287,18 @@ public class ClientHandle implements Runnable {
         return account.getUserName();
     }
 
-<<<<<<< Updated upstream
-    public boolean checkValidRoomMessage(String[] message) {
+    public boolean checkValidRoomMessage(String[] message) throws IOException {
         if (message.length < 3) {
-            this.sender.print("Command is invalid! Please try again");
+            this.out.writeUTF("Command is invalid! Please try again");
             return false;
         }
         if (!isNumeric(message[1])) {
-            this.sender.print("ID ROOM is invalid! Please try again");
+            this.out.writeUTF("ID ROOM is invalid! Please try again");
             return false;
         }
         return true;
     }
 
-=======
-    // public boolean checkValidRoomMessage(String []message)
-    // {
-    //     if (message.length < 3) {
-    //         this.sender.print("Command is invalid! Please try again");
-    //         return false;
-    //     }
-    //     if (!isNumeric(message[1])) {
-    //         this.sender.print("ID ROOM is invalid! Please try again");
-    //         return false;
-    //     }
-    //     return true; 
-    // }
->>>>>>> Stashed changes
     public boolean isNumeric(String strNum) {
         Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
 

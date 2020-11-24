@@ -50,21 +50,13 @@ public class Client {
             String username = keyboard.readLine();
             System.out.print("Password: ");
             String password = keyboard.readLine();
-<<<<<<< Updated upstream
-            out.println("1");
-            out.println(username);
-            out.println(password);
-            String isValid = in.readLine();
-   
-=======
-
+    
             out.writeUTF("1");
             out.writeUTF(username);
             out.writeUTF(password);
 
             String isValid = in.readUTF();
 
->>>>>>> Stashed changes
             if (isValid.equals("true")) {
                 isAccountValid = true;
                 account = new Account(username, password);
@@ -95,16 +87,12 @@ public class Client {
 
 
         keyboard = new BufferedReader(new InputStreamReader(System.in));
-<<<<<<< Updated upstream
-        out = new PrintWriter(socket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        //fout = new ObjectOutputStream(socket.getOutputStream());
-=======
+
+  
         out = new DataOutputStream(server.getOutputStream());
         in = new DataInputStream(server.getInputStream());
         
         // fout = new ObjectOutputStream(socket.getOutputStream());
->>>>>>> Stashed changes
 
         signingMenu(keyboard);
         // out.println(account.getUserName() + " has joined");
@@ -126,8 +114,9 @@ public class Client {
                 String desPath = msg[2];
                 sendFile(server,sourcePath, desPath);
             }
-            command = account.getUserName() + ": " + command;
-            out.writeUTF(command);
+            else 
+            // command = account.getUserName() + ": " + command;
+                out.writeUTF(command);
         }
     }
 
