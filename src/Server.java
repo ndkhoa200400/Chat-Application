@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.net.Socket;
 class Server {
     private static final int PORT = 9090;
     private static ArrayList<ClientHandle> clients = new ArrayList<>();
-    private static ArrayList<RoomChat> rooms = new ArrayList<>();
+    private static HashMap<Integer, RoomChat> rooms = new HashMap<>();
     
     private static ExecutorService pool = Executors.newFixedThreadPool(4);
 

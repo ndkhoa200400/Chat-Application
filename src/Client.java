@@ -9,7 +9,7 @@ public class Client {
     private static final String SERVER_IP = "127.0.0.1";
     private static final int SERVER_PORT = 9090;
     private static Account account;
-    //private static BufferedReader in; // Receive msg from the server
+    // private static BufferedReader in; // Receive msg from the server
     private static DataInputStream in;
     private static DataOutputStream out;
     private static BufferedReader keyboard; // Receive msg from this client
@@ -50,7 +50,7 @@ public class Client {
             String username = keyboard.readLine();
             System.out.print("Password: ");
             String password = keyboard.readLine();
-    
+
             out.writeUTF("1");
             out.writeUTF(username);
             out.writeUTF(password);
@@ -60,7 +60,7 @@ public class Client {
             if (isValid.equals("true")) {
                 isAccountValid = true;
                 account = new Account(username, password);
-               
+
             }
             if (!isAccountValid) {
                 System.out.println("Your username or your password is invalid");
@@ -85,20 +85,19 @@ public class Client {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         Socket server = new Socket(SERVER_IP, SERVER_PORT);
 
-
         keyboard = new BufferedReader(new InputStreamReader(System.in));
 
-  
         out = new DataOutputStream(server.getOutputStream());
         in = new DataInputStream(server.getInputStream());
-        
+
         // fout = new ObjectOutputStream(socket.getOutputStream());
 
         signingMenu(keyboard);
-        // out.println(account.getUserName() + " has joined");
-        out.writeUTF(" has joined");
+
         // Listen incoming msg from server (other clients)
-        new Thread(() -> {listen(server);}).start();
+        new Thread(() -> {
+            listen(server);
+        }).start();
         send(server);
 
     }
@@ -112,10 +111,9 @@ public class Client {
                 String[] msg = command.split(" ");
                 String sourcePath = msg[1];
                 String desPath = msg[2];
-                sendFile(server,sourcePath, desPath);
-            }
-            else 
-            // command = account.getUserName() + ": " + command;
+                sendFile(server, sourcePath, desPath);
+            } else
+                // command = account.getUserName() + ": " + command;
                 out.writeUTF(command);
         }
     }
@@ -139,15 +137,15 @@ public class Client {
         }
     }
 
-    public static void sendFile(Socket server,String src, String des) {
+    public static void sendFile(Socket server, String src, String des) {
         fin = null;
-        fout= null;
+        fout = null;
 
         try {
             fout = new ObjectOutputStream(server.getOutputStream());
             fout.flush();
             // fin = new ObjectInputStream(server.getInputStream());
-            
+
             // get file info
             file fileInfo = new file();
             fileInfo = getFileInfo(src, des);
@@ -155,7 +153,6 @@ public class Client {
             // send file content
             fout.writeObject(fileInfo);
             fout.flush();
-          
 
         } catch (Exception e) {
             e.printStackTrace();
