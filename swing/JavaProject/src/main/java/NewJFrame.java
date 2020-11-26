@@ -197,7 +197,7 @@ public class NewJFrame extends javax.swing.JFrame {
         );
 
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
-        panel.setLayout(panelLayout);
+        //panel.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 311, Short.MAX_VALUE)
@@ -251,7 +251,9 @@ public class NewJFrame extends javax.swing.JFrame {
                 .addComponent(container, javax.swing.GroupLayout.PREFERRED_SIZE, 580, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
         );
+        scroll.setPreferredSize(new Dimension(400,400));
 
+        panel.add(scroll, BorderLayout.PAGE_START);
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
@@ -264,30 +266,21 @@ public class NewJFrame extends javax.swing.JFrame {
     private void sendAttachmentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendAttachmentButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_sendAttachmentButtonActionPerformed
-    public static JPanel formatLabel(String out){
-        JPanel p3 = new JPanel();
-        p3.setLayout(new BoxLayout(p3, BoxLayout.Y_AXIS));
-        
-        JLabel l1 = new JLabel("<html><p style = \"width : 150px\">"+out+"</p></html>");
-        l1.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        l1.setBackground(new Color(37, 211, 102));
-        l1.setOpaque(true);
-       
-        
-        p3.add(l1);
-         
-        return p3;
-    }
+
+
     public void sendButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sendButtonMouseClicked
         String stringMessage = typeMessageField.getText();
+        vertical.setOpaque(false);
         
-        JLabel a = new JLabel(stringMessage);
-        JPanel p = new JPanel();
-        p.add(a);
-        this.vertical.add(p, BorderLayout.LINE_START);
-
-        panel.add(vertical, BorderLayout.PAGE_START);
-        panel.repaint();
+        JLabel a = new JLabel("<html><a href='facebook.com'>"+stringMessage+"</a></html>");
+        a.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        a.setOpaque(true);
+       //a.setBackground(Color.red);
+        vertical.setAlignmentX(Component.LEFT_ALIGNMENT);
+        this.vertical.add(a, BorderLayout.LINE_START);
+        vertical.add(Box.createVerticalStrut(10));
+        
+       
         panel.revalidate();
     }//GEN-LAST:event_sendButtonMouseClicked
 
@@ -321,6 +314,7 @@ public class NewJFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                
                 new NewJFrame().setVisible(true);
             }
         });
@@ -343,5 +337,8 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JTextArea typeMessageField;
     private javax.swing.JPanel userStateContainer;
     private Box vertical = Box.createVerticalBox();
+    private JScrollPane scroll = new JScrollPane(vertical,   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    
     // End of variables declaration//GEN-END:variables
 }
