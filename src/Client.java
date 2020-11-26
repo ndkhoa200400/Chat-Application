@@ -1,14 +1,18 @@
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.Socket;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class Client {
     private static final String SERVER_IP = "127.0.0.1";
     private static final int SERVER_PORT = 9090;
-    private static Account account;
     // private static BufferedReader in; // Receive msg from the server
     private static DataInputStream in;
     private static DataOutputStream out;
@@ -33,7 +37,7 @@ public class Client {
             String isValid = in.readUTF();
             if (isValid.equals("true")) {
                 isAccountValid = true;
-                account = new Account(username, password);
+
             } else {
                 System.out.println("Username has already been taken");
             }
@@ -59,7 +63,6 @@ public class Client {
 
             if (isValid.equals("true")) {
                 isAccountValid = true;
-                account = new Account(username, password);
 
             }
             if (!isAccountValid) {
@@ -80,6 +83,16 @@ public class Client {
         } else {
             signUp(keyboard);
         }
+    }
+
+    static void changePassword() throws IOException {
+        System.out.println("Enter your current password: ");
+        String password = keyboard.readLine();
+        out.writeUTF(password);
+        System.out.println("Enter new password: ");
+        String newPassword = keyboard.readLine();
+        out.writeUTF(newPassword);
+        
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -112,6 +125,10 @@ public class Client {
                 String sourcePath = msg[1];
                 String desPath = msg[2];
                 sendFile(server, sourcePath, desPath);
+            } else if (command.startsWith("/changepassword")) {
+                out.writeUTF(command);
+                changePassword();
+
             } else
                 // command = account.getUserName() + ": " + command;
                 out.writeUTF(command);
@@ -137,8 +154,8 @@ public class Client {
         }
     }
 
-    public static void sendFile(Socket server, String src, String des) {
-        fin = null;
+    public static void sendFile(Socket server, String src, String des) throws IOException {
+
         fout = null;
 
         try {
@@ -153,9 +170,11 @@ public class Client {
             // send file content
             fout.writeObject(fileInfo);
             fout.flush();
-
+            System.out.println("Sent successfully");
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+
         }
     }
 

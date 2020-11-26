@@ -26,7 +26,10 @@ public class Account {
         this.username = username;
         this.password = password;
     }
-
+    public boolean checkPassword(String p)
+    {
+        return this.password.equals(p);
+    }
     // static boolean isExisted(String username)
     // {
     // @SuppressWarnings("unchecked")
@@ -97,12 +100,13 @@ public class Account {
           
             // Neu chua co tai `khoan nao trong file
             if (obj == null) return false;
-            System.out.println(obj);
+           
             for (int i = 0; i < obj.size(); i++) {
                 JsonObject account = obj.get(i).getAsJsonObject();
-                System.out.println(account);
-                if (account.get("username").equals(username) &&
-                    bCryptPasswordEncoder.matches(password, account.get("password").toString())){
+     
+                if (account.get("username").getAsString().equals(username) &&
+                    bCryptPasswordEncoder.matches(password, account.get("password").getAsString())){
+                  
                     return true;
                 }
             }
@@ -110,7 +114,7 @@ public class Account {
 
         } catch (Exception e) {
             // TODO: handle exception
-
+            e.printStackTrace();
         }
      
         return false;
@@ -131,8 +135,6 @@ public class Account {
     // }
 
     static void signUp(String username, String password) throws IOException {
-
-        Account newA = new Account(username, password);
         FileWriter writer = null;
         try{
            
@@ -159,5 +161,36 @@ public class Account {
 
     String getUserName() {
         return this.username;
+    }
+
+    void changePassword(String newPassword) throws IOException
+    {
+        this.password = newPassword;
+        FileWriter writer = null;
+        try{
+           
+            try (FileReader reader = new FileReader("./database/accounts.json")) {
+                // Read JSON file
+
+                JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
+                if (obj == null) obj = new JsonArray();
+                for (int i = 0; i < obj.size(); i++) {
+                    JsonObject account = (JsonObject) obj.get(i);
+                    if (account.get("username").getAsString().equals(this.username))
+                        account.addProperty("password", bCryptPasswordEncoder.encode(password));
+                }
+                // temp.addProperty("username", username);
+                // temp.addProperty("password", bCryptPasswordEncoder.encode(password));
+                // obj.add(temp);
+                writer = new FileWriter("./database/accounts.json", false);
+                gson.toJson(obj, writer);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }}catch(Exception e)
+        {
+            e.printStackTrace();
+        }finally{
+            writer.close();
+        }
     }
 }

@@ -153,7 +153,7 @@ public class ClientHandle implements Runnable {
 
                         case "sendfile":
                             request = account.getUserName() + " has already sent a new attachment.";
-                            if (recvFile(this.client, messages[1], messages[2]))
+                            if (recvFile(messages[1], messages[2]))
                                 sendToAll(request);
                             else
                                 this.out.writeUTF("Failed to send file");
@@ -161,11 +161,22 @@ public class ClientHandle implements Runnable {
 
                         case "showroom":
                             for (RoomChat r : rooms.values()) {
-                                out.writeInt(r.getID());
+                                if (r.getParticipants().contains(this))
+                                    out.writeInt(r.getID());
+                            }
+                            break;
+                        case "showonlineroom":
+                            RoomChat r = rooms.get(Integer.parseInt(messages[1]));
+                            for (ClientHandle p : r.getParticipants()) {
+                                System.out.println(p.getUsername());
                             }
                             break;
                         case "room":
                             sendToRoom(messages);
+                            break;
+                        case "changepassword":
+                            System.out.println("OK");
+                            changePassword();
                             break;
                         default:
                             // this.sender.println("Command is invalid");
@@ -179,44 +190,47 @@ public class ClientHandle implements Runnable {
 
             }
 
-        } catch (
-
-        Exception e) {
+        } catch (Exception e) {
             System.err.println("IO exception in client handler");
             System.err.println(e.getStackTrace());
         } finally {
             try {
                 out.close();
-            } catch (IOException e1) {
+                in.close();
+            } catch (Exception e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-            try {
-                in.close();
-            } catch (Exception e) {
-                System.err.println(e.getStackTrace());
 
-            }
             clients.remove(this);
             try {
                 sendToAll(this.account.getUserName() + " has left!");
-            } catch (IOException e1) {
+                this.client.close();
+            } catch (Exception e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-            try {
-                this.client.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+      
         }
     }
 
-    boolean recvFile(Socket client, String src, String des) throws IOException {
+    void changePassword() throws IOException
+    {
+        String currentPassword = in.readUTF();
+        String newPassword = in.readUTF();
+        if (!this.account.checkPassword(currentPassword))
+        {
+            out.writeUTF("Your current password is incorrect. Please try again");
+        } else {
+            this.account.changePassword(newPassword);
+            out.writeUTF("Changed password successfully");
+        }
+    }
+
+    boolean recvFile(String src, String des) throws IOException {
         file newFile;
         boolean isValid = false;
-        this.fin = new ObjectInputStream(client.getInputStream());
+        this.fin = new ObjectInputStream(this.client.getInputStream());
         try {
 
             // this.fout = new ObjectOutputStream(client.getOutputStream());

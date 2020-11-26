@@ -1,7 +1,9 @@
 
 import java.awt.Color;
 import javax.swing.*;
-
+import java.awt.event.*; 
+import java.awt.*; 
+import javax.swing.*; 
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -44,7 +46,7 @@ public class NewJFrame extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         userStateContainer = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        panel = new javax.swing.JPanel();
+        panel = new javax.swing.JPanel(new BorderLayout());
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -262,14 +264,31 @@ public class NewJFrame extends javax.swing.JFrame {
     private void sendAttachmentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendAttachmentButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_sendAttachmentButtonActionPerformed
-
-    private void sendButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sendButtonMouseClicked
+    public static JPanel formatLabel(String out){
+        JPanel p3 = new JPanel();
+        p3.setLayout(new BoxLayout(p3, BoxLayout.Y_AXIS));
+        
+        JLabel l1 = new JLabel("<html><p style = \"width : 150px\">"+out+"</p></html>");
+        l1.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        l1.setBackground(new Color(37, 211, 102));
+        l1.setOpaque(true);
+       
+        
+        p3.add(l1);
+         
+        return p3;
+    }
+    public void sendButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sendButtonMouseClicked
         String stringMessage = typeMessageField.getText();
         
         JLabel a = new JLabel(stringMessage);
-        panel.add(a);
-        panel.updateUI();
-        typeMessageField.setText(stringMessage);
+        JPanel p = new JPanel();
+        p.add(a);
+        this.vertical.add(p, BorderLayout.LINE_START);
+
+        panel.add(vertical, BorderLayout.PAGE_START);
+        panel.repaint();
+        panel.revalidate();
     }//GEN-LAST:event_sendButtonMouseClicked
 
     /**
@@ -323,5 +342,6 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JButton sendButton;
     private javax.swing.JTextArea typeMessageField;
     private javax.swing.JPanel userStateContainer;
+    private Box vertical = Box.createVerticalBox();
     // End of variables declaration//GEN-END:variables
 }

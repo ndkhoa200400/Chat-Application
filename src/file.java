@@ -19,6 +19,7 @@ public class file implements Serializable{
     private int piecesOfFile;
 
     file(String source, String destination){
+       
         this.sourceDirectory = source;
         this.destinationDirectory = destination;
     }
