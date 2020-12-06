@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [
     {
         "username": "S18127265",
@@ -66,3 +67,6 @@
         "avatar_img": "./database/user_img/hinh.jpg"
     }
 ]
+=======
+[{"username":"vanmapdjt","password":"$2a$10$CCoKrOD3cp/GW1wJXdk.yemse952wCq6nDi1MXKEDG4k4Ix.8ogNm"},{"username":"mymapdjt","password":"$2a$10$DhUNO4kS99Yo2frUsJd76.1x15G9.9Qpwo2Dbii8gYGJy1OnVz9TO"},{"username":"dangkhoa","password":"$2a$10$TNzoBcm2Ulb8UrrrlYcPtuSNqM3Cx.KHkWts/3oHEltYO/ZdNIfvO"}]
+>>>>>>> c0b72c67f531e9ca4b1472a31f52a65ee9d06d84

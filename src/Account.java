@@ -35,8 +35,35 @@ public class Account {
         this.password = password;
         this.mode = mode;
     }
+    public boolean checkPassword(String p)
+    {
+        return this.password.equals(p);
+    }
+    // static boolean isExisted(String username)
+    // {
+    // @SuppressWarnings("unchecked")
+    // BufferedReader reader;
+    // try {
+    // // reader = new BufferedReader(new FileReader("accounts.txt"));
+    // reader = new BufferedReader(new FileReader("./database/accounts.json"));
+    // String line = reader.readLine();
+    // while (line != null) {
+    // if (line.equals(username)) {
+    // reader.close();
+    // return true;
+    // }
+    // // read next line
+    // line = reader.readLine();
+    // line = reader.readLine();
+    // }
+    // reader.close();
 
-    
+    // } catch (Exception e) {
+    // //TODO: handle exception
+    // System.err.println("ERROR when checking existing accounts");
+    // }
+    // return false;
+    // }
     static boolean isExisted(String username) {
 
         try (FileReader reader = new FileReader("./database/accounts.json")) {
@@ -82,14 +109,13 @@ public class Account {
           
             // Neu chua co tai `khoan nao trong file
             if (obj == null) return false;
-            System.out.println(obj);
+           
             for (int i = 0; i < obj.size(); i++) {
                 JsonObject account = obj.get(i).getAsJsonObject();
-                String a = "18127250";
-                System.out.println("\"" + a + "\"");
-                System.out.println(account.get("username"));
-                if (account.get("username").equals( "\"" + username + "\"") &&
-                    bCryptPasswordEncoder.matches(password, account.get("password").toString())){
+     
+                if (account.get("username").getAsString().equals(username) &&
+                    bCryptPasswordEncoder.matches(password, account.get("password").getAsString())){
+                  
                     return true;
                 }
             }
@@ -97,7 +123,7 @@ public class Account {
 
         } catch (Exception e) {
             // TODO: handle exception
-
+            e.printStackTrace();
         }
      
         return false;

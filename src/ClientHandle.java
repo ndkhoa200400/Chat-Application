@@ -170,7 +170,14 @@ public class ClientHandle implements Runnable {
 
                         case "showroom":
                             for (RoomChat r : rooms.values()) {
-                                out.writeInt(r.getID());
+                                if (r.getParticipants().contains(this))
+                                    out.writeInt(r.getID());
+                            }
+                            break;
+                        case "showonlineroom":
+                            RoomChat r = rooms.get(Integer.parseInt(messages[1]));
+                            for (ClientHandle p : r.getParticipants()) {
+                                System.out.println(p.getUsername());
                             }
                             break;
 
@@ -181,7 +188,11 @@ public class ClientHandle implements Runnable {
                         case "receivefile":
                             showFileList();
                             break;
-
+                            
+                        case "changepassword":
+                            System.out.println("OK");
+                            changePassword();
+                            break;
                         default:
                             // this.sender.println("Command is invalid");
                             this.out.writeUTF("Command is invalid");
@@ -194,37 +205,40 @@ public class ClientHandle implements Runnable {
 
             }
 
-        } catch (
-
-        Exception e) {
+        } catch (Exception e) {
             System.err.println("IO exception in client handler");
             System.err.println(e.getStackTrace());
         } finally {
             try {
                 out.close();
-            } catch (IOException e1) {
+                in.close();
+            } catch (Exception e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-            try {
-                in.close();
-            } catch (Exception e) {
-                System.err.println(e.getStackTrace());
 
-            }
             clients.remove(this);
             try {
                 sendToAll(this.account.getUserName() + " has left!");
-            } catch (IOException e1) {
+                this.client.close();
+            } catch (Exception e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-            try {
-                this.client.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+      
+        }
+    }
+
+    void changePassword() throws IOException
+    {
+        String currentPassword = in.readUTF();
+        String newPassword = in.readUTF();
+        if (!this.account.checkPassword(currentPassword))
+        {
+            out.writeUTF("Your current password is incorrect. Please try again");
+        } else {
+            this.account.changePassword(newPassword);
+            out.writeUTF("Changed password successfully");
         }
     }
 

@@ -1,14 +1,18 @@
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.Socket;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class Client {
     private static final String SERVER_IP = "127.0.0.1";
     private static final int SERVER_PORT = 9090;
-    private static Account account;
     // private static BufferedReader in; // Receive msg from the server
     private static DataInputStream in;
     private static DataOutputStream out;
@@ -16,6 +20,7 @@ public class Client {
     // private static PrintWriter out; // Send this client's msg to the server
     private static ObjectOutputStream fout; // send bytes of file to server
     private static ObjectInputStream fin;
+    private static Account account;
 
     public static String getMode(String username){
         if (username.startsWith("S"))
@@ -102,6 +107,16 @@ public class Client {
         }
     }
 
+    static void changePassword() throws IOException {
+        System.out.println("Enter your current password: ");
+        String password = keyboard.readLine();
+        out.writeUTF(password);
+        System.out.println("Enter new password: ");
+        String newPassword = keyboard.readLine();
+        out.writeUTF(newPassword);
+        
+    }
+
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         Socket server = new Socket(SERVER_IP, SERVER_PORT);
 
@@ -178,9 +193,11 @@ public class Client {
             // send file content
             fout.writeObject(fileInfo);
             fout.flush();
-
+            System.out.println("Sent successfully");
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+
         }
     }
 
