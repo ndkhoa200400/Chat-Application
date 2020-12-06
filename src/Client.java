@@ -1,3 +1,4 @@
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -11,6 +12,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class Client {
+
     private static final String SERVER_IP = "127.0.0.1";
     private static final int SERVER_PORT = 9090;
     // private static BufferedReader in; // Receive msg from the server
@@ -21,14 +23,38 @@ public class Client {
     private static ObjectOutputStream fout; // send bytes of file to server
     private static ObjectInputStream fin;
     private static Account account;
+    private static Socket server;
 
-    public static String getMode(String username){
-        if (username.startsWith("S"))
+    public static String getMode(String username) {
+        if (username.startsWith("S")) {
             return "student";
-        if (username.startsWith("T"))
+        }
+        if (username.startsWith("T")) {
             return "teacher";
-        else
+        } else {
             return "staff";
+        }
+    }
+
+    public static boolean logIn(String username, String password) throws IOException, ClassNotFoundException {
+        boolean isAccountValid = false;
+
+        String mode = getMode(username);
+
+        out.writeUTF("1");
+        out.writeUTF(username);
+        out.writeUTF(password);
+        out.writeUTF(mode);
+
+        String isValid = in.readUTF();
+
+        if (isValid.equals("true")) {
+            isAccountValid = true;
+            account = new Account(username, password, mode);
+
+        }
+
+        return isAccountValid;
     }
 
     public static void signUp(BufferedReader keyboard) throws IOException, ClassNotFoundException {
@@ -46,7 +72,6 @@ public class Client {
             // String filePath = keyboard.readLine();
             // file obj = new file();
             // obj.getFileInfo(filePath,"./");
-
             out.writeUTF("0");
             out.writeUTF(username);
             out.writeUTF(password);
@@ -56,7 +81,7 @@ public class Client {
             String isValid = in.readUTF();
             if (isValid.equals("true")) {
                 isAccountValid = true;
-                account = new Account(username, password,mode);
+                account = new Account(username, password, mode);
             } else {
                 System.out.println("Username has already been taken");
             }
@@ -84,7 +109,7 @@ public class Client {
 
             if (isValid.equals("true")) {
                 isAccountValid = true;
-                account = new Account(username, password,mode);
+                account = new Account(username, password, mode);
 
             }
             if (!isAccountValid) {
@@ -114,7 +139,7 @@ public class Client {
         System.out.println("Enter new password: ");
         String newPassword = keyboard.readLine();
         out.writeUTF(newPassword);
-        
+
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -126,7 +151,6 @@ public class Client {
         in = new DataInputStream(server.getInputStream());
 
         // fout = new ObjectOutputStream(socket.getOutputStream());
-
         signingMenu(keyboard);
 
         // Listen incoming msg from server (other clients)
@@ -137,29 +161,41 @@ public class Client {
 
     }
 
+    public static void connectToServer() throws IOException {
+        server = new Socket(SERVER_IP, SERVER_PORT);
+        out = new DataOutputStream(server.getOutputStream());
+        in = new DataInputStream(server.getInputStream());
+    }
+
+    static void send(String message) throws IOException {
+        out.writeUTF(message);
+    }
+
     static void send(Socket server) throws IOException {
         // Send msg to server and let server send it to other client
         while (true) {
             String command = keyboard.readLine();
-            String [] messages = command.split(" ");
+            String[] messages = command.split(" ");
             if (command.startsWith("/")) {
-                switch(messages[0]){
-                // sendfile ./testfile/hinh.jpg => send file public
+                switch (messages[0]) {
+                    // sendfile ./testfile/hinh.jpg => send file public
                     case "/sendfile":
                         out.writeUTF(command);
                         sendFile(server, messages[1]);
                         break;
-                // receive hinh.jpg
+                    // receive hinh.jpg
                     case "/receivefile":
-                        if(recvFile(server, messages[1]))
+                        if (recvFile(server, messages[1])) {
                             System.out.println("Receving file successfully");
+                        }
                         break;
-                    default :
+                    default:
                         out.writeUTF("Command is invalid");
                         break;
                 }
-            } else
+            } else {
                 out.writeUTF(command);
+            }
         }
     }
 
@@ -200,7 +236,6 @@ public class Client {
 
         }
     }
-
 
     public static boolean recvFile(Socket server, String src) throws IOException {
         file newFile;

@@ -6,7 +6,7 @@
 package main.java.javaproject.guiproject;
 
 import java.awt.*;
-import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -20,12 +20,14 @@ import javax.swing.text.StyledDocument;
  * @author ADMIN
  */
 public class GUI extends javax.swing.JFrame {
-
+    
     /**
      * Creates new form GUI
      */
-    public GUI() {
+    public GUI() throws IOException {
         initComponents();
+        Client.connectToServer();
+      
     }
 
     /**
@@ -42,8 +44,17 @@ public class GUI extends javax.swing.JFrame {
         ChooseFileFrame = new javax.swing.JFrame();
         peopleOnlineFrame = new javax.swing.JFrame();
         jPanel2 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jList2 = new javax.swing.JList<>();
+        loginFrame = new javax.swing.JFrame();
+        jPanel3 = new javax.swing.JPanel();
+        usernameInput = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        signInButton = new javax.swing.JButton();
+        signUpButton = new javax.swing.JButton();
+        passwordInput = new javax.swing.JPasswordField();
+        wrongInputFrame = new javax.swing.JFrame();
         roomPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         showPeople = new javax.swing.JButton();
@@ -67,28 +78,36 @@ public class GUI extends javax.swing.JFrame {
             .addGap(0, 399, Short.MAX_VALUE)
         );
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        jList2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        jList2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jList2.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane2.setViewportView(jList1);
+        jScrollPane4.setViewportView(jList2);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(78, Short.MAX_VALUE))
+            .addGap(0, 260, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 555, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(34, Short.MAX_VALUE))
+            .addGap(0, 600, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
 
         javax.swing.GroupLayout peopleOnlineFrameLayout = new javax.swing.GroupLayout(peopleOnlineFrame.getContentPane());
@@ -102,9 +121,110 @@ public class GUI extends javax.swing.JFrame {
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        loginFrame.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+
+        usernameInput.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        usernameInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usernameInputActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel1.setText("Username");
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel2.setText("Password");
+
+        signInButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        signInButton.setText("Sign in");
+        signInButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                signInButtonMouseClicked(evt);
+            }
+        });
+
+        signUpButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        signUpButton.setText("Sign up");
+        signUpButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                signUpButtonMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(47, 47, 47)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(usernameInput)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1)
+                            .addComponent(passwordInput, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(65, 65, 65)
+                        .addComponent(signInButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(signUpButton)))
+                .addContainerGap(48, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(usernameInput, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(passwordInput, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(signInButton)
+                    .addComponent(signUpButton))
+                .addContainerGap(34, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout loginFrameLayout = new javax.swing.GroupLayout(loginFrame.getContentPane());
+        loginFrame.getContentPane().setLayout(loginFrameLayout);
+        loginFrameLayout.setHorizontalGroup(
+            loginFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        loginFrameLayout.setVerticalGroup(
+            loginFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        javax.swing.GroupLayout wrongInputFrameLayout = new javax.swing.GroupLayout(wrongInputFrame.getContentPane());
+        wrongInputFrame.getContentPane().setLayout(wrongInputFrameLayout);
+        wrongInputFrameLayout.setHorizontalGroup(
+            wrongInputFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        wrongInputFrameLayout.setVerticalGroup(
+            wrongInputFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat Application");
         setMinimumSize(new java.awt.Dimension(900, 700));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         roomPanel.setBackground(new java.awt.Color(255, 255, 255));
         roomPanel.setAlignmentX(0.0F);
@@ -113,7 +233,8 @@ public class GUI extends javax.swing.JFrame {
         roomPanel.setMinimumSize(new java.awt.Dimension(250, 600));
         roomPanel.setName(""); // NOI18N
 
-        showPeople.setText("jButton1");
+        showPeople.setBackground(new java.awt.Color(255, 255, 255));
+        showPeople.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/java/javaproject/guiproject/group.png"))); // NOI18N
         showPeople.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 showPeopleMouseClicked(evt);
@@ -183,7 +304,8 @@ public class GUI extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(messageType);
 
-        sendAttachment.setIcon(new javax.swing.ImageIcon("E:\\Code\\Project Java\\javaProject\\src\\main\\java\\javaProject\\paperclip.png")); // NOI18N
+        sendAttachment.setBackground(new java.awt.Color(255, 255, 255));
+        sendAttachment.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/java/javaproject/guiproject/paperclip.png"))); // NOI18N
         sendAttachment.setAlignmentY(0.0F);
         sendAttachment.setMaximumSize(new java.awt.Dimension(80, 80));
         sendAttachment.setMinimumSize(new java.awt.Dimension(80, 80));
@@ -194,7 +316,8 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
-        sendButton.setIcon(new javax.swing.ImageIcon("E:\\Code\\Project Java\\javaProject\\src\\main\\java\\javaProject\\send.png")); // NOI18N
+        sendButton.setBackground(new java.awt.Color(255, 255, 255));
+        sendButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main/java/javaproject/guiproject/send.png"))); // NOI18N
         sendButton.setAlignmentY(0.0F);
         sendButton.setMaximumSize(new java.awt.Dimension(80, 80));
         sendButton.setMinimumSize(new java.awt.Dimension(80, 80));
@@ -269,6 +392,7 @@ public class GUI extends javax.swing.JFrame {
         if(evt.getKeyChar() == '\n'){
             sendButtonMouseClicked(evt1);
         }
+        
     }//GEN-LAST:event_messageTypeKeyTyped
 
     private void sendAttachmentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sendAttachmentMouseClicked
@@ -296,6 +420,86 @@ public class GUI extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_showPeopleMouseClicked
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formWindowActivated
+
+    private void signInButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signInButtonMouseClicked
+        // TODO add your handling code here:
+        String username, password;
+        
+        username = usernameInput.getText();
+        password = new String(passwordInput.getPassword());
+        
+        if(!username.isEmpty() && !password.isEmpty()){
+            
+            boolean isValid = true;
+            try {
+                isValid = Client.logIn(username, password);
+            } catch (IOException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (isValid)
+            {
+                 loginFrame.setVisible(false);
+            loginFrame.dispose();
+            this.setVisible(true);
+            }
+            else
+            {
+                JOptionPane.showConfirmDialog(null, "Sai mk");
+            }
+        }
+        else{
+            wrongInputFrame.setSize(320,150);
+            javax.swing.JLabel msgErr = new javax.swing.JLabel("Password and Username can not empty");
+            msgErr.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 14));
+            msgErr.setBounds(20, wrongInputFrame.getHeight()/5, 300, 50);
+            wrongInputFrame.add(msgErr);
+            msgErr.setVisible(true);
+            wrongInputFrame.setLocationRelativeTo(loginFrame);
+            wrongInputFrame.setVisible(true);
+        }
+    }//GEN-LAST:event_signInButtonMouseClicked
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        loginFrame.setSize(300, 260);
+        loginFrame.setLocationRelativeTo(this);
+        this.setVisible(false);
+        loginFrame.setVisible(true);
+    }//GEN-LAST:event_formWindowOpened
+
+    private void usernameInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameInputActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_usernameInputActionPerformed
+
+    private void signUpButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signUpButtonMouseClicked
+        // TODO add your handling code here:
+        String username, password;
+        
+        username = usernameInput.getText();
+        password = new String(passwordInput.getPassword());
+        
+        if(!username.isEmpty() && !password.isEmpty()){
+            loginFrame.setVisible(false);
+            loginFrame.dispose();
+            this.setVisible(true);
+        }
+        else{
+            wrongInputFrame.setSize(320,150);
+            javax.swing.JLabel msgErr = new javax.swing.JLabel("Password and Username can not empty");
+            msgErr.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 14));
+            msgErr.setBounds(20, wrongInputFrame.getHeight()/5, 300, 50);
+            wrongInputFrame.add(msgErr);
+            msgErr.setVisible(true);
+            wrongInputFrame.setLocationRelativeTo(loginFrame);
+            wrongInputFrame.setVisible(true);
+        }
+    }//GEN-LAST:event_signUpButtonMouseClicked
     private String formatMessage(String mess){
         int count = 0;
         for (int i = 0; i < mess.length(); i++) {
@@ -372,24 +576,34 @@ public class GUI extends javax.swing.JFrame {
         });
     }
 
-    private Box vertical = Box.createVerticalBox();
+   
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFrame ChooseFileFrame;
-    private javax.swing.JList<String> jList1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JList<String> jList2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JFrame loginFrame;
     private javax.swing.JPanel messageToolPanel;
     private javax.swing.JTextArea messageType;
     private javax.swing.JPanel nameRoomPanel;
+    private javax.swing.JPasswordField passwordInput;
     private javax.swing.JFrame peopleOnlineFrame;
     private javax.swing.JPanel roomPanel;
     private javax.swing.JTextPane screenMessagePane;
     private javax.swing.JButton sendAttachment;
     private javax.swing.JButton sendButton;
     private javax.swing.JButton showPeople;
+    private javax.swing.JButton signInButton;
+    private javax.swing.JButton signUpButton;
+    private javax.swing.JTextField usernameInput;
+    private javax.swing.JFrame wrongInputFrame;
     // End of variables declaration//GEN-END:variables
 
 }

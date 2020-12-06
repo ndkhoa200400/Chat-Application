@@ -24,7 +24,7 @@ public class Account {
 
     private static Gson gson = new Gson();
 
-    Account(String username, String password) {
+    public Account(String username, String password) {
         this.username = username;
         this.password = password;
     }
