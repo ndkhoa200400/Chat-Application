@@ -1,1 +1,68 @@
-[{"username":"vanmapdjt","password":"$2a$10$CCoKrOD3cp/GW1wJXdk.yemse952wCq6nDi1MXKEDG4k4Ix.8ogNm"},{"username":"mymapdjt","password":"$2a$10$DhUNO4kS99Yo2frUsJd76.1x15G9.9Qpwo2Dbii8gYGJy1OnVz9TO"}]
+[
+    {
+        "username": "S18127265",
+        "password": "$2a$10$Hbe9Clc1VZ1UaOnV16Hd8..BSIu2vAAOyPaY2G9Qexh8vFdHtGXpu",
+        "mode": "student",
+        "avatar_img": "./database/user_img/hinh.jpg"
+    },
+    {
+        "username": "T2222",
+        "password": "$2a$10$HyutImJoz9hHShKW1NXF4uLhA7qD/xP3fme7r9qelhiLhZu6YfklK",
+        "mode": "teacher",
+        "avatar_img": "./database/user_img/hinh.jpg"
+    },
+    {
+        "username": "S18127121",
+        "password": "$2a$10$pVEh1XS3my5lLohBNI0r4uRtAAeHVORgh4.G37J2eflYbU86Q8wOC",
+        "mode": "student",
+        "avatar_img": "./database/user_img/hinh.jpg"
+    },
+    {
+        "username": "S181272158",
+        "password": "$2a$10$l4CCeEuU43ZsQaQiDWseRuMw75Tq/Dp.Km.F/.R8aej0ewU1xZWHO",
+        "mode": "student",
+        "avatar_img": "./database/user_img/hinh.jpg"
+    },
+    {
+        "username": "T3333",
+        "password": "$2a$10$CJ05a/PA63dkKmkZAdjqr.GmoNTQo6V/aKCRxCfGWh8WD8/.4iAWq",
+        "mode": "teacher",
+        "avatar_img": "./database/user_img/hinh.jpg"
+    },
+    {
+        "username": "T4444",
+        "password": "$2a$10$P.KLg.km6wzgLyex4dqJKuT78pQirmPeyVfsagu8ccxMP1awY9bDm",
+        "mode": "teacher",
+        "avatar_img": "./database/user_img/hinh.jpg"
+    },
+    {
+        "username": "H1111",
+        "password": "$2a$10$as9mZ46Axy0i05gYHEDHS.8rJxqh054E5QGLSZ6s8n0UL4GQJPqxW",
+        "mode": "staff",
+        "avatar_img": "./database/user_img/hinh.jpg"
+    },
+    {
+        "username": "S18127111",
+        "password": "$2a$10$TuA11q5aZqmO1cO9C9v.eex0NVcykaLjv5SxEstdtwHnJa7Uw7b9S",
+        "mode": "student",
+        "avatar_img": "./database/user_img/hinh.jpg"
+    },
+    {
+        "username": "S18127250",
+        "password": "$2a$10$y.lX29bJfeAx0Mynhbhkk.GHZftE077sOM6yBDQh2biNrbbfo8V5a",
+        "mode": "student",
+        "avatar_img": "./database/user_img/hinh.jpg"
+    },
+    {
+        "username": "S18127244",
+        "password": "$2a$10$CLx6B/3DHMYwXrIWCIc.X.9ogeTH.dqdHB2KG7E5zXNsDHLZIIBZi",
+        "mode": "student",
+        "avatar_img": "./database/user_img/hinh.jpg"
+    },
+    {
+        "username": "H1234",
+        "password": "$2a$10$6Seud2dvUDxEWrT8QnuQl.eANa02qAjJlSe1oo5v5mD.7KXVQnIIa",
+        "mode": "staff",
+        "avatar_img": "./database/user_img/hinh.jpg"
+    }
+]

@@ -18,40 +18,25 @@ public class Account {
     @SerializedName(value = "password")
     private String password;
 
+    @SerializedName(value = "mode")
+    private String mode;
+
+    @SerializedName(value = "avatar_img")
+    private String avatar_img;
+
     private static BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     private static Gson gson = new Gson();
 
-    Account(String username, String password) {
+    final static String F_STRING ="./testfile/hinh.jpg";
+
+    Account(String username, String password,String mode) {
         this.username = username;
         this.password = password;
+        this.mode = mode;
     }
 
-    // static boolean isExisted(String username)
-    // {
-    // @SuppressWarnings("unchecked")
-    // BufferedReader reader;
-    // try {
-    // // reader = new BufferedReader(new FileReader("accounts.txt"));
-    // reader = new BufferedReader(new FileReader("./database/accounts.json"));
-    // String line = reader.readLine();
-    // while (line != null) {
-    // if (line.equals(username)) {
-    // reader.close();
-    // return true;
-    // }
-    // // read next line
-    // line = reader.readLine();
-    // line = reader.readLine();
-    // }
-    // reader.close();
-
-    // } catch (Exception e) {
-    // //TODO: handle exception
-    // System.err.println("ERROR when checking existing accounts");
-    // }
-    // return false;
-    // }
+    
     static boolean isExisted(String username) {
 
         try (FileReader reader = new FileReader("./database/accounts.json")) {
@@ -100,8 +85,10 @@ public class Account {
             System.out.println(obj);
             for (int i = 0; i < obj.size(); i++) {
                 JsonObject account = obj.get(i).getAsJsonObject();
-                System.out.println(account);
-                if (account.get("username").equals(username) &&
+                String a = "18127250";
+                System.out.println("\"" + a + "\"");
+                System.out.println(account.get("username"));
+                if (account.get("username").equals( "\"" + username + "\"") &&
                     bCryptPasswordEncoder.matches(password, account.get("password").toString())){
                     return true;
                 }
@@ -116,34 +103,25 @@ public class Account {
         return false;
     }
 
-    // static void signUp(String username, String password)
-    // {
-    // BufferedWriter writer = null;
-    // try {
-    // writer = new BufferedWriter(new FileWriter("./database/accounts.json",
-    // true));
-    // writer.write(username +"\n" + password + "\n");
-    // writer.close();
-    // } catch (IOException e) {
-    // System.out.println("Exception occurred:");
-    // e.printStackTrace();
-    // }
-    // }
 
-    static void signUp(String username, String password) throws IOException {
+    static void signUp(String username, String password,String mode) throws IOException {
 
-        Account newA = new Account(username, password);
+        Account newA = new Account(username, password, mode);
         FileWriter writer = null;
         try{
            
             try (FileReader reader = new FileReader("./database/accounts.json")) {
                 // Read JSON file
-
                 JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
                 if (obj == null) obj = new JsonArray();
                 JsonObject temp = new JsonObject();
+                file img = new file();
+                img.getFileInfo(F_STRING);
+
                 temp.addProperty("username", username);
                 temp.addProperty("password", bCryptPasswordEncoder.encode(password));
+                temp.addProperty("mode", mode);
+                temp.addProperty("avatar_img","./database/user_img/hinh.jpg");
                 obj.add(temp);
                 writer = new FileWriter("./database/accounts.json", false);
                 gson.toJson(obj, writer);
@@ -159,5 +137,60 @@ public class Account {
 
     String getUserName() {
         return this.username;
+    }
+
+    void changePassword(String newPassword) throws IOException
+    {
+        this.password = newPassword;
+        FileWriter writer = null;
+        try{
+           
+            try (FileReader reader = new FileReader("./database/accounts.json")) {
+                // Read JSON file
+
+                JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
+                if (obj == null) obj = new JsonArray();
+                for (int i = 0; i < obj.size(); i++) {
+                    JsonObject account = (JsonObject) obj.get(i);
+                    if (account.get("username").getAsString().equals(this.username))
+                        account.addProperty("password", bCryptPasswordEncoder.encode(password));
+                }
+                writer = new FileWriter("./database/accounts.json", false);
+                gson.toJson(obj, writer);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }}catch(Exception e)
+        {
+            e.printStackTrace();
+        }finally{
+            writer.close();
+        }
+    }
+
+    void changeAvatar(String filePath) throws IOException
+    {
+        FileWriter writer = null;
+        try{
+           
+            try (FileReader reader = new FileReader("./database/accounts.json")) {
+                // Read JSON file
+
+                JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
+                if (obj == null) obj = new JsonArray();
+                for (int i = 0; i < obj.size(); i++) {
+                    JsonObject account = (JsonObject) obj.get(i);
+                    if (account.get("username").getAsString().equals(this.username))
+                        account.addProperty("avatar_img", filePath);
+                }
+                writer = new FileWriter("./database/accounts.json", false);
+                gson.toJson(obj, writer);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }}catch(Exception e)
+        {
+            e.printStackTrace();
+        }finally{
+            writer.close();
+        }
     }
 }

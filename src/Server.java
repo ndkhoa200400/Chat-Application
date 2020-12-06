@@ -1,8 +1,11 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
+
+import com.google.gson.Gson;
+
 import java.util.concurrent.ExecutorService;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -12,6 +15,7 @@ import java.net.Socket;
  * Listen to clients' connection
  */
 class Server {
+
     private static final int PORT = 9090;
     private static ArrayList<ClientHandle> clients = new ArrayList<>();
     private static HashMap<Integer, RoomChat> rooms = new HashMap<>();
@@ -34,4 +38,5 @@ class Server {
             pool.execute(clientThread);
         }
     }
+ 
 }

@@ -1,0 +1,29 @@
+[
+    {
+        "name": "hinh.jpg",
+        "type": "JPEG",
+        "des": "./database/",
+        "size": 51402,
+        "date": "\"Nov 23, 2020, 4:26:10 PM\"",
+        "sender": "T4444",
+        "receiver": "all"
+    },
+    {
+        "name": "hinh.jpg",
+        "type": "JPEG",
+        "des": "./database/",
+        "size": 51402,
+        "date": "\"Nov 23, 2020, 4:26:10 PM\"",
+        "sender": "H1111",
+        "receiver": "all"
+    },
+    {
+        "name": "hinh.jpg",
+        "type": "JPEG",
+        "des": "./database/",
+        "size": 51402,
+        "date": "\"Nov 23, 2020, 4:26:10 PM\"",
+        "sender": "S18127111",
+        "receiver": "all"
+    }
+]

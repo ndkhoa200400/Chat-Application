@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 /**
  * ClientHandle Used to send one client's msg to other clients
  */
@@ -15,6 +19,8 @@ public class ClientHandle implements Runnable {
     private Account account;
     private ObjectInputStream fin;
     private ObjectOutputStream fout;
+    private ArrayList<file> fileList = new ArrayList<file>();
+    private Gson gson = new Gson();
 
     // Private room chat
     private HashMap<Integer, RoomChat> rooms;
@@ -26,10 +32,9 @@ public class ClientHandle implements Runnable {
         this.rooms = rooms;
         this.in = new DataInputStream(client.getInputStream());
         this.out = new DataOutputStream(client.getOutputStream());
-
     }
 
-    boolean checkSignUp(String username, String password) throws IOException {
+    boolean checkSignUp(String username, String password,String mode) throws IOException {
         if (Account.isExisted(username)) {
 
             return false;
@@ -38,7 +43,7 @@ public class ClientHandle implements Runnable {
 
             return false;
         }
-        Account.signUp(username, password);
+        Account.signUp(username, password,mode);
 
         return true;
     }
@@ -96,17 +101,16 @@ public class ClientHandle implements Runnable {
                 String mode = in.readUTF();
                 String username = in.readUTF();
                 String password = in.readUTF();
-                System.out.println(mode +","+username+", " + password);
-               
+                String mode_user = in.readUTF();
+            
                 if (mode.equals("0")) {
-                  
-                    isAccountValid = checkSignUp(username, password);
+                    isAccountValid = checkSignUp(username, password,mode_user);
                 } else {
                     isAccountValid = checkSignIn(username, password);
                 }       
                 if (isAccountValid) {
                     this.out.writeUTF("true");
-                    account = new Account(username, password);
+                    account = new Account(username, password,mode);
                 } else {
                     this.out.writeUTF("false");
                 }
@@ -151,12 +155,17 @@ public class ClientHandle implements Runnable {
                             inviteToRoom(messages);
                             break;
 
+                        //sendfile
                         case "sendfile":
                             request = account.getUserName() + " has already sent a new attachment.";
-                            if (recvFile(this.client, messages[1], messages[2]))
+                            if (recvFile(this.client, messages[1]))
                                 sendToAll(request);
                             else
                                 this.out.writeUTF("Failed to send file");
+                            break;
+                        
+                        case "receivefile hinh.jpg":
+                            sendFile(this.client, messages[1]);
                             break;
 
                         case "showroom":
@@ -164,9 +173,15 @@ public class ClientHandle implements Runnable {
                                 out.writeInt(r.getID());
                             }
                             break;
+
                         case "room":
                             sendToRoom(messages);
                             break;
+                            
+                        case "receivefile":
+                            showFileList();
+                            break;
+
                         default:
                             // this.sender.println("Command is invalid");
                             this.out.writeUTF("Command is invalid");
@@ -213,19 +228,49 @@ public class ClientHandle implements Runnable {
         }
     }
 
-    boolean recvFile(Socket client, String src, String des) throws IOException {
+    boolean recvFile(Socket client, String src) throws IOException {
         file newFile;
         boolean isValid = false;
         this.fin = new ObjectInputStream(client.getInputStream());
+        FileWriter writer = null;
         try {
 
             // this.fout = new ObjectOutputStream(client.getOutputStream());
             newFile = (file) fin.readObject();
             if (newFile != null) {
-                createFile(newFile);
+                newFile.setDestinationDirectory("./database/");
+                newFile.setCommunication(this.getUsername(), "all");
+                newFile.createFile();
+                // save to json
+                try (FileReader reader = new FileReader("./database/fileList.json")) {
+                    // Read JSON file
+                    JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
+                    if (obj == null) obj = new JsonArray();
+                    JsonObject temp = new JsonObject();
+
+                    temp.addProperty("name", newFile.getFilename());
+                    temp.addProperty("type", newFile.getFileType());
+                    temp.addProperty("des", newFile.getDestinationDirectory());
+                    temp.addProperty("size", newFile.getFileSize());
+                    temp.addProperty("size", newFile.getFileSize());
+                    temp.addProperty("date", gson.toJson(newFile.getDate()));
+                    temp.addProperty("sender", newFile.getSender());
+                    temp.addProperty("receiver", newFile.getRecver());
+
+                    obj.add(temp);
+
+                    writer = new FileWriter("./database/fileList.json", false);
+                    gson.toJson(obj, writer);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }finally{
+                    writer.close();
+                }
                 // send confirmation
                 newFile.setStatus("Success");
                 isValid = true;
+                fileList.add(newFile);
             }
         } catch (ClassNotFoundException | IOException e) {
             // TODO Auto-generated catch block
@@ -234,21 +279,23 @@ public class ClientHandle implements Runnable {
         return isValid;
     }
 
-    public boolean createFile(file newFile) {
-        BufferedOutputStream bos = null;
+    public void sendFile(Socket server,String fileName) {
+
         try {
-            if (newFile != null) {
-                File fileRecv = new File(newFile.getDestinationDirectory() + newFile.getFilename());
-                bos = new BufferedOutputStream(new FileOutputStream(fileRecv));
-                // write file content
-                bos.write(newFile.getDataBytes());
-                bos.flush();
+            fout = new ObjectOutputStream(server.getOutputStream());
+            fout.flush();
+            // fin = new ObjectInputStream(server.getInputStream());
+            for (file x : fileList){
+                if (x.getFilename().equals(fileName)
+                     && x.getRecver().equals("all")){
+                    // send file content
+                    fout.writeObject(x);
+                    fout.flush();
+                }
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return false;
+            e.printStackTrace();
         }
-        return true;
     }
 
     void sendToRoom(String[] message) throws IOException {
@@ -296,6 +343,13 @@ public class ClientHandle implements Runnable {
         for (ClientHandle clientHandle : clients) {
           
             this.out.writeUTF(". " + clientHandle.account.getUserName());
+        }
+    }
+
+    void showFileList() throws IOException {
+        this.out.writeUTF("Number of file list: "+ fileList.size());
+        for (file x : fileList){
+            this.out.writeUTF(". "+ x.getFilename());
         }
     }
 
