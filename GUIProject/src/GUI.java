@@ -231,7 +231,7 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
-        roomPanel.setBackground(new java.awt.Color(255, 255, 255));
+        roomPanel.setBackground(new java.awt.Color(204, 204, 204));
         roomPanel.setAlignmentX(0.0F);
         roomPanel.setAlignmentY(0.0F);
         roomPanel.setMaximumSize(new java.awt.Dimension(250, 600));
@@ -360,10 +360,12 @@ public class GUI extends javax.swing.JFrame {
                 .addGap(12, 12, 12))
         );
 
+        jScrollPane3.setBorder(null);
         jScrollPane3.setAutoscrolls(true);
 
         screenMessagePane.setEditable(false);
-        screenMessagePane.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        screenMessagePane.setBorder(null);
+        screenMessagePane.setFont(new java.awt.Font("Segoe UI Historic", 0, 16)); // NOI18N
         screenMessagePane.setAutoscrolls(false);
         jScrollPane3.setViewportView(screenMessagePane);
 
@@ -408,21 +410,41 @@ public class GUI extends javax.swing.JFrame {
             StyledDocument doc = screenMessagePane.getStyledDocument();
             msg = formatMessage(msg);
             SimpleAttributeSet keyWord = new SimpleAttributeSet();
-
+            SimpleAttributeSet keyWordName = new SimpleAttributeSet();
+            
+            StyleConstants.setLineSpacing(keyWord, (float)0.05);
+            
+            
             if (align.equals("right")) {
                 StyleConstants.setAlignment(keyWord, StyleConstants.ALIGN_RIGHT);
+
+                StyleConstants.setBackground(keyWord, Color.DARK_GRAY);
+                StyleConstants.setForeground(keyWord, Color.WHITE);
+                
+                StyleConstants.setFontSize(keyWord, 16);
+                doc.setParagraphAttributes(doc.getLength(), 1, keyWord, true);  
+                doc.insertString(doc.getLength(), " " + msg + " " + "\n", keyWord); 
+                
             } else {
                 StyleConstants.setAlignment(keyWord, StyleConstants.ALIGN_LEFT);
+                StyleConstants.setAlignment(keyWordName, StyleConstants.ALIGN_LEFT);
+                
+                StyleConstants.setBackground(keyWord, Color.lightGray);
+                StyleConstants.setForeground(keyWord, Color.BLACK);
+                
+                StyleConstants.setForeground(keyWordName, Color.GRAY);
+
+                doc.setParagraphAttributes(doc.getLength(), 1, keyWordName, true);
+                
+                StyleConstants.setFontSize(keyWordName, 14);
+                doc.insertString(doc.getLength(), name + "\n", keyWordName);
+                
+                doc.setParagraphAttributes(doc.getLength(), 1, keyWord, true);  
+                
+                StyleConstants.setFontSize(keyWord, 16);
+                doc.insertString(doc.getLength(), " " + msg + " " + "\n", keyWord);
             }
-            StyleConstants.setForeground(keyWord, Color.GRAY);
-
-            doc.setParagraphAttributes(doc.getLength(), 1, keyWord, false);
-
-            doc.insertString(doc.getLength(), name + ": \n", keyWord);
-
-            StyleConstants.setForeground(keyWord, Color.BLACK);
-
-            doc.insertString(doc.getLength(), msg + "\n\n", keyWord);
+            
         } catch (BadLocationException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -488,9 +510,7 @@ public class GUI extends javax.swing.JFrame {
             boolean isValid = true;
             try {
                 isValid = Client.logIn(username, password);
-            } catch (IOException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
             if (isValid) {
@@ -534,16 +554,17 @@ public class GUI extends javax.swing.JFrame {
         password = new String(passwordInput.getPassword());
 
         if (!username.isEmpty() && !password.isEmpty()) {
-            loginFrame.setVisible(false);
-            loginFrame.dispose();
-            this.setVisible(true);
-            listeningHandler.start();
+            boolean isValid = true;
             try {
-                Client.signUp(username, password);
-            } catch (IOException ex) {
+                isValid = Client.signUp(username, password);
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if(isValid){
+                loginFrame.setVisible(false);
+                loginFrame.dispose();
+                this.setVisible(true);
+                listeningHandler.start();
             }
         } else {
             wrongInputFrame.setSize(320, 150);
@@ -586,7 +607,7 @@ public class GUI extends javax.swing.JFrame {
             StyledDocument doc = screenMessagePane.getStyledDocument();
             mess = formatMessage(mess);
             if (!mess.isEmpty()) {
-                insertTextToPane(mess, "You: ", "right");
+                insertTextToPane(mess, "You", "right");
             }
             Client.send(mess);
             messageType.setText(null);
@@ -615,33 +636,21 @@ public class GUI extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         // </editor-fold>
+        
+        // </editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    GUI g = new GUI();
-                    g.setVisible(true);
-
-//                    while(true)
-//                    {
-//                        String mess = Client.listen();
-//                        System.out.println(mess);
-//                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
+                GUI g = new GUI();
+                g.setVisible(true);
+                
+            } catch (IOException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }
