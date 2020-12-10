@@ -14,7 +14,7 @@ import javax.swing.text.StyledDocument;
 public class GUI extends javax.swing.JFrame {
 
     Thread listeningHandler;
-
+    
     /**
      * Creates new form GUI
      */
@@ -490,7 +490,15 @@ public class GUI extends javax.swing.JFrame {
                     name = mess.substring(0, split);
                     mess = mess.substring(split + 1);
                 }
-                if(name.equal())
+                if(name.equals("admin"))
+                {
+                    String[] response = mess.split(" ");
+                    switch(response[0]){
+                        case "createroom":
+                            
+                            break;
+                    }
+                } 
 
                 insertTextToPane(mess, name, "left");
             }

@@ -71,7 +71,7 @@ public class ClientHandle implements Runnable {
 
                             room.add(clientHandle);
                             this.out.writeUTF("Invited " + invitedUsername + " to room " + ID_ROOM);
-                            clientHandle.out.writeUTF("You have been invited to room #" + room.getID());
+                            clientHandle.out.writeUTF("invite " + room.getID());
                             return;
                         }
                     }
@@ -146,7 +146,7 @@ public class ClientHandle implements Runnable {
                         case "createroom":
                             RoomChat room = new RoomChat(this);
                             rooms.put(room.getID(), room);
-                            this.out.writeUTF("Room has been created! ID: " + room.getID());
+                            this.out.writeUTF("createroom " + room.getID());
                             break;
 
                         // Syntax: /invite room_chat username

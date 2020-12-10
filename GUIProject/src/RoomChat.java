@@ -13,7 +13,7 @@ public class RoomChat {
 
     RoomChat(ClientHandle c){
         Random thuanmy = new Random();
-        int trucvan = thuanmy.nextInt(9999);
+        int trucvan = thuanmy.nextInt(9998) + 1;
         this.ID_ROOM = trucvan;
         this.host = c;
         participants = new ArrayList<>();
