@@ -37,6 +37,11 @@
     <artifactId>spring-security-crypto</artifactId>
     <version>5.4.1</version>
 </dependency>
+                <dependency>
+		    <groupId>com.formdev</groupId>
+		    <artifactId>flatlaf</artifactId>
+		    <version>0.45</version>
+		</dependency>
 <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>

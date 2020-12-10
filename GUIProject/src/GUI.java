@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+import com.formdev.flatlaf.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -68,6 +69,8 @@ public class GUI extends javax.swing.JFrame {
         roomPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         showPeople = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        roomList = new javax.swing.JList<>();
         nameRoomPanel = new javax.swing.JPanel();
         messageToolPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -258,17 +261,45 @@ public class GUI extends javax.swing.JFrame {
             .addComponent(showPeople, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
         );
 
+        jScrollPane2.setBorder(null);
+
+        roomList.setBackground(new java.awt.Color(204, 204, 204));
+        roomList.setFont(new java.awt.Font("Segoe UI Historic", 0, 18)); // NOI18N
+        roomList.setForeground(new java.awt.Color(51, 51, 51));
+        roomList.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "PUBLIC CHAT" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        roomList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        roomList.setAlignmentX(1.0F);
+        roomList.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        roomList.setSelectionBackground(new java.awt.Color(255, 255, 255));
+        roomList.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        roomList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                roomListMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(roomList);
+
         javax.swing.GroupLayout roomPanelLayout = new javax.swing.GroupLayout(roomPanel);
         roomPanel.setLayout(roomPanelLayout);
         roomPanelLayout.setHorizontalGroup(
             roomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(roomPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2)
+                .addContainerGap())
         );
         roomPanelLayout.setVerticalGroup(
             roomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(roomPanelLayout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2)
+                .addContainerGap())
         );
 
         nameRoomPanel.setBackground(new java.awt.Color(102, 102, 102));
@@ -386,7 +417,7 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(nameRoomPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(messageToolPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -582,6 +613,14 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
 
     }//GEN-LAST:event_sendButtonActionPerformed
+
+    private void roomListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_roomListMouseClicked
+        // TODO add your handling code here:
+        String select = roomList.getSelectedValue();
+        if(select.equals("PUBLIC ROOM")){
+             
+        }
+    }//GEN-LAST:event_roomListMouseClicked
     private String formatMessage(String mess) {
         int count = 0;
         for (int i = 0; i < mess.length(); i++) {
@@ -630,15 +669,20 @@ public class GUI extends javax.swing.JFrame {
          * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            UIManager.setLookAndFeel( new FlatIntelliJLaf() );
+        } catch( Exception ex ) {
+            System.err.println( "Failed to initialize LaF" );
         }
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
         // </editor-fold>
         
         // </editor-fold>
@@ -665,6 +709,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JFrame loginFrame;
@@ -673,6 +718,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JPanel nameRoomPanel;
     private javax.swing.JPasswordField passwordInput;
     private javax.swing.JFrame peopleOnlineFrame;
+    private javax.swing.JList<String> roomList;
     private javax.swing.JPanel roomPanel;
     private javax.swing.JTextPane screenMessagePane;
     private javax.swing.JButton sendAttachment;
