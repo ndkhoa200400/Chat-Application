@@ -1,7 +1,8 @@
 import com.formdev.flatlaf.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +24,7 @@ public class GUI extends javax.swing.JFrame {
         screenStateHash.put(0, screenMessagePane);
         currentScreen = screenMessagePane;
         currentIdRoom = 0;
-        roomNameHash.put("PUBLIC ROOM", 0);
+        roomNameHash.put("PUBLIC CHAT", 0);
         Client.connectToServer();
         // Listening to server
         listeningHandler = new Thread(() -> {
@@ -31,7 +32,6 @@ public class GUI extends javax.swing.JFrame {
                 getMessage();
             } catch (Exception ex) {
                 System.out.println("Loi trong listening");
-                ex.printStackTrace();
             }
         });
 
@@ -309,7 +309,7 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
-        roomPanel.setBackground(new java.awt.Color(204, 204, 204));
+        roomPanel.setBackground(new java.awt.Color(255, 255, 255));
         roomPanel.setAlignmentX(0.0F);
         roomPanel.setAlignmentY(0.0F);
         roomPanel.setMaximumSize(new java.awt.Dimension(250, 600));
@@ -344,7 +344,6 @@ public class GUI extends javax.swing.JFrame {
             .addComponent(createRoom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        roomList.setBackground(new java.awt.Color(204, 204, 204));
         roomList.setFont(new java.awt.Font("Segoe UI Historic", 0, 18)); // NOI18N
         roomList.setForeground(new java.awt.Color(51, 51, 51));
         listModel.addElement("PUBLIC CHAT");
@@ -355,8 +354,8 @@ public class GUI extends javax.swing.JFrame {
         roomList.setMaximumSize(new java.awt.Dimension(256, 0));
         roomList.setMinimumSize(new java.awt.Dimension(256, 554));
         roomList.setPreferredSize(new java.awt.Dimension(250, 550));
-        roomList.setSelectionBackground(new java.awt.Color(255, 255, 255));
-        roomList.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        roomList.setSelectionBackground(new java.awt.Color(153, 153, 153));
+        roomList.setSelectionForeground(new java.awt.Color(255, 255, 255));
         roomList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 roomListMouseClicked(evt);
@@ -383,7 +382,8 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        nameRoomPanel.setBackground(new java.awt.Color(102, 102, 102));
+        nameRoomPanel.setBackground(new java.awt.Color(255, 255, 255));
+        nameRoomPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         nameRoomPanel.setAlignmentX(0.0F);
         nameRoomPanel.setAlignmentY(0.0F);
         nameRoomPanel.setPreferredSize(new java.awt.Dimension(550, 50));
@@ -404,10 +404,11 @@ public class GUI extends javax.swing.JFrame {
         );
         nameRoomPanelLayout.setVerticalGroup(
             nameRoomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(addUserToRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+            .addComponent(addUserToRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
         );
 
-        messageToolPanel.setBackground(new java.awt.Color(153, 153, 153));
+        messageToolPanel.setBackground(new java.awt.Color(255, 255, 255));
+        messageToolPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
         messageToolPanel.setAlignmentX(0.0F);
         messageToolPanel.setAlignmentY(0.0F);
         messageToolPanel.setMaximumSize(new java.awt.Dimension(550, 550));
@@ -422,6 +423,9 @@ public class GUI extends javax.swing.JFrame {
         messageType.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         messageType.setMargin(new java.awt.Insets(10, 10, 10, 10));
         messageType.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                messageTypeKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 messageTypeKeyTyped(evt);
             }
@@ -461,7 +465,7 @@ public class GUI extends javax.swing.JFrame {
             messageToolPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(messageToolPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -480,13 +484,13 @@ public class GUI extends javax.swing.JFrame {
                 .addGap(12, 12, 12))
         );
 
+        jScrollPane3.setBackground(new java.awt.Color(255, 255, 255));
         jScrollPane3.setBorder(null);
         jScrollPane3.setAutoscrolls(true);
 
         screenMessagePane.setEditable(false);
         screenMessagePane.setBorder(null);
         screenMessagePane.setFont(new java.awt.Font("Segoe UI Historic", 0, 16)); // NOI18N
-        screenMessagePane.setAutoscrolls(false);
         jScrollPane3.setViewportView(screenMessagePane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -506,7 +510,7 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(nameRoomPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(messageToolPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -521,7 +525,6 @@ public class GUI extends javax.swing.JFrame {
         if (evt.getKeyChar() == '\n') {
             sendButtonMouseClicked(evt1);
         }
-
     }//GEN-LAST:event_messageTypeKeyTyped
 
     private void insertTextToPane(String msg, String name, String align) {
@@ -532,13 +535,12 @@ public class GUI extends javax.swing.JFrame {
             SimpleAttributeSet keyWord = new SimpleAttributeSet();
             SimpleAttributeSet keyWordName = new SimpleAttributeSet();
             
-            StyleConstants.setLineSpacing(keyWord, (float)0.05);
+            //StyleConstants.setLineSpacing(keyWord, (float)0.05);
             
             if (align.equals("right")) {
                 StyleConstants.setAlignment(keyWord, StyleConstants.ALIGN_RIGHT);
 
-                StyleConstants.setBackground(keyWord, Color.DARK_GRAY);
-                StyleConstants.setForeground(keyWord, Color.WHITE);
+                StyleConstants.setForeground(keyWord, Color.DARK_GRAY);
                 
                 StyleConstants.setFontSize(keyWord, 16);
                 doc.setParagraphAttributes(doc.getLength(), 1, keyWord, true);  
@@ -548,10 +550,9 @@ public class GUI extends javax.swing.JFrame {
                 StyleConstants.setAlignment(keyWord, StyleConstants.ALIGN_LEFT);
                 StyleConstants.setAlignment(keyWordName, StyleConstants.ALIGN_LEFT);
                 
-                StyleConstants.setBackground(keyWord, Color.lightGray);
                 StyleConstants.setForeground(keyWord, Color.BLACK);
                 
-                StyleConstants.setForeground(keyWordName, Color.GRAY);
+                StyleConstants.setForeground(keyWordName, Color.LIGHT_GRAY);
 
                 doc.setParagraphAttributes(doc.getLength(), 1, keyWordName, true);
                 
@@ -563,6 +564,8 @@ public class GUI extends javax.swing.JFrame {
                 StyleConstants.setFontSize(keyWord, 16);
                 doc.insertString(doc.getLength(), " " + msg + " " + "\n", keyWord);
             }
+            JScrollBar sb = jScrollPane3.getVerticalScrollBar();
+            sb.setValue( sb.getMaximum() );
             
         } catch (BadLocationException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -604,7 +607,7 @@ public class GUI extends javax.swing.JFrame {
         if(roomNameString.isEmpty()){
                 roomNameString = "Room " + idRoom;
             }
-        JTextPane newMessScreen = new JTextPane();
+        JTextPane newMessScreen;
         newMessScreen = new javax.swing.JTextPane();
         newMessScreen.setEditable(false);
         newMessScreen.setBorder(null);
@@ -739,7 +742,7 @@ public class GUI extends javax.swing.JFrame {
         if(roomNameString.isEmpty()){
                 roomNameString = "Room " + idRoom;
             }
-        JTextPane newMessScreen = new JTextPane();
+        JTextPane newMessScreen;
         newMessScreen = new javax.swing.JTextPane();
         newMessScreen.setEditable(false);
         newMessScreen.setBorder(null);
@@ -770,7 +773,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void addUserToRoomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addUserToRoomMouseClicked
         // TODO add your handling code here:
-        if(roomNameHash.get("PUBLIC ROOM") != currentIdRoom){
+        if(roomNameHash.get("PUBLIC CHAT") != currentIdRoom){
             inviteToRoom.setVisible(true);
             inviteToRoom.setLocationRelativeTo(this);
             inviteToRoom.pack();
@@ -784,6 +787,10 @@ public class GUI extends javax.swing.JFrame {
         inputNameOfUser.setText("");
         inviteToRoom.dispose();
     }//GEN-LAST:event_inviteButtonMouseClicked
+
+    private void messageTypeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTypeKeyPressed
+
+    }//GEN-LAST:event_messageTypeKeyPressed
     private String formatMessage(String mess) {
         int count = 0;
         for (int i = 0; i < mess.length(); i++) {
@@ -836,8 +843,8 @@ public class GUI extends javax.swing.JFrame {
     
     javax.swing.DefaultListModel<String> listModel = new javax.swing.DefaultListModel<>();
     javax.swing.DefaultListModel<String> userListModel = new javax.swing.DefaultListModel<>();
-    private HashMap<Integer, JTextPane> screenStateHash = new HashMap<>();
-    private HashMap<String, Integer> roomNameHash = new HashMap<>();
+    private final HashMap<Integer, JTextPane> screenStateHash = new HashMap<>();
+    private final HashMap<String, Integer> roomNameHash = new HashMap<>();
     private JTextPane currentScreen = new JTextPane();
     private int currentIdRoom;
     // Variables declaration - do not modify//GEN-BEGIN:variables

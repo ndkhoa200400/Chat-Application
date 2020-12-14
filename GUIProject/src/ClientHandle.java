@@ -9,16 +9,16 @@ import java.util.regex.Pattern;
  * ClientHandle Used to send one client's msg to other clients
  */
 public class ClientHandle implements Runnable {
-    private Socket client;
-    private DataOutputStream out;
-    private DataInputStream in;
-    private ArrayList<ClientHandle> clients; // Keep trace the other clients
+    private final Socket client;
+    private final DataOutputStream out;
+    private final DataInputStream in;
+    private final ArrayList<ClientHandle> clients; // Keep trace the other clients
     private Account account;
     private ObjectInputStream fin;
     private ObjectOutputStream fout;
 
     // Private room chat
-    private HashMap<Integer, RoomChat> rooms;
+    private final HashMap<Integer, RoomChat> rooms;
 
     ClientHandle(Socket clientSocker, ArrayList<ClientHandle> clients, HashMap<Integer, RoomChat> rooms)
             throws IOException {
@@ -45,10 +45,8 @@ public class ClientHandle implements Runnable {
     }
 
     boolean checkSignIn(String username, String password) throws IOException {
-        for (ClientHandle clientHandle : clients) {
-            if (clientHandle != this)
-                if (clientHandle.account.getUserName().equals(username))
-                    return false;
+        if (!clients.stream().filter(clientHandle -> (clientHandle != this)).noneMatch(clientHandle -> (clientHandle.account.getUserName().equals(username)))) {
+            return false;
         }
         return (Account.checkAccount(username, password));
     }
@@ -112,7 +110,7 @@ public class ClientHandle implements Runnable {
                     this.out.writeUTF("false");
                 }
             } while (!isAccountValid);
-        }catch(Exception e)
+        }catch(IOException e)
         {
             e.printStackTrace();
         }
@@ -170,10 +168,11 @@ public class ClientHandle implements Runnable {
                             break;
                         case "showonlineroom":
                             RoomChat r = rooms.get(Integer.parseInt(messages[1]));
-                            for (ClientHandle p : r.getParticipants()) {
+                            r.getParticipants().forEach(p -> {
                                 System.out.println(p.getUsername());
-                            }
+                        });
                             break;
+
                         case "room":
                             sendToRoom(messages);
                             break;
@@ -193,14 +192,14 @@ public class ClientHandle implements Runnable {
 
             }
 
-        } catch (Exception e) {
+        } catch (IOException | NumberFormatException e) {
             System.err.println("IO exception in client handler");
             System.err.println(e.getStackTrace());
         } finally {
             try {
                 out.close();
                 in.close();
-            } catch (Exception e1) {
+            } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
@@ -209,7 +208,7 @@ public class ClientHandle implements Runnable {
             try {
                 //sendToAll(this.account.getUserName() + " has left!");
                 this.client.close();
-            } catch (Exception e1) {
+            } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
@@ -261,7 +260,7 @@ public class ClientHandle implements Runnable {
                 bos.write(newFile.getDataBytes());
                 bos.flush();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
             return false;
         }
