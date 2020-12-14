@@ -22,6 +22,7 @@ public class GUI extends javax.swing.JFrame {
         initComponents();
         screenStateHash.put(0, screenMessagePane);
         currentScreen = screenMessagePane;
+        currentIdRoom = 0;
         roomNameHash.put("PUBLIC ROOM", 0);
         Client.connectToServer();
         // Listening to server
@@ -46,7 +47,7 @@ public class GUI extends javax.swing.JFrame {
         peopleOnlineFrame = new javax.swing.JFrame();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList<>();
+        userOnlineList = new javax.swing.JList<>();
         loginFrame = new javax.swing.JFrame();
         jPanel3 = new javax.swing.JPanel();
         usernameInput = new javax.swing.JTextField();
@@ -60,6 +61,9 @@ public class GUI extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         inputRoomName = new javax.swing.JTextField();
         saveRoomName = new javax.swing.JButton();
+        inviteToRoom = new javax.swing.JFrame();
+        inputNameOfUser = new javax.swing.JTextField();
+        inviteButton = new javax.swing.JButton();
         roomPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         showPeople = new javax.swing.JButton();
@@ -67,6 +71,7 @@ public class GUI extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         roomList = new javax.swing.JList<>();
         nameRoomPanel = new javax.swing.JPanel();
+        addUserToRoom = new javax.swing.JButton();
         messageToolPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         messageType = new javax.swing.JTextArea();
@@ -88,9 +93,10 @@ public class GUI extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
-        jList2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
-        jList2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jScrollPane4.setViewportView(jList2);
+        userOnlineList.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        userOnlineList.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        userOnlineList.setModel(userListModel);
+        jScrollPane4.setViewportView(userOnlineList);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -218,6 +224,7 @@ public class GUI extends javax.swing.JFrame {
         );
 
         inputRoomName.setFont(new java.awt.Font("Segoe UI Historic", 0, 18)); // NOI18N
+        inputNameRoomFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         saveRoomName.setText("OK");
         saveRoomName.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -258,6 +265,38 @@ public class GUI extends javax.swing.JFrame {
             .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
+        inviteToRoom.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        inputNameOfUser.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        inviteButton.setText("INVITE");
+        inviteButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                inviteButtonMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout inviteToRoomLayout = new javax.swing.GroupLayout(inviteToRoom.getContentPane());
+        inviteToRoom.getContentPane().setLayout(inviteToRoomLayout);
+        inviteToRoomLayout.setHorizontalGroup(
+            inviteToRoomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(inviteToRoomLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(inputNameOfUser, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(inviteButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        inviteToRoomLayout.setVerticalGroup(
+            inviteToRoomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(inviteToRoomLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(inviteToRoomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(inviteButton, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                    .addComponent(inputNameOfUser))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat Application");
         setMinimumSize(new java.awt.Dimension(900, 700));
@@ -277,14 +316,13 @@ public class GUI extends javax.swing.JFrame {
         roomPanel.setMinimumSize(new java.awt.Dimension(250, 600));
         roomPanel.setName(""); // NOI18N
 
-        showPeople.setBackground(new java.awt.Color(255, 255, 255));
+        showPeople.setIcon(new javax.swing.ImageIcon(getClass().getResource("/group.png"))); // NOI18N
         showPeople.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 showPeopleMouseClicked(evt);
             }
         });
 
-        createRoom.setBackground(new java.awt.Color(255, 255, 255));
         createRoom.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 createRoomMouseClicked(evt);
@@ -350,15 +388,23 @@ public class GUI extends javax.swing.JFrame {
         nameRoomPanel.setAlignmentY(0.0F);
         nameRoomPanel.setPreferredSize(new java.awt.Dimension(550, 50));
 
+        addUserToRoom.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addUserToRoomMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout nameRoomPanelLayout = new javax.swing.GroupLayout(nameRoomPanel);
         nameRoomPanel.setLayout(nameRoomPanelLayout);
         nameRoomPanelLayout.setHorizontalGroup(
             nameRoomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 550, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, nameRoomPanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(addUserToRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         nameRoomPanelLayout.setVerticalGroup(
             nameRoomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 50, Short.MAX_VALUE)
+            .addComponent(addUserToRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
         );
 
         messageToolPanel.setBackground(new java.awt.Color(153, 153, 153));
@@ -382,7 +428,7 @@ public class GUI extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(messageType);
 
-        sendAttachment.setBackground(new java.awt.Color(255, 255, 255));
+        sendAttachment.setIcon(new javax.swing.ImageIcon(getClass().getResource("/paperclip.png"))); // NOI18N
         sendAttachment.setAlignmentY(0.0F);
         sendAttachment.setMaximumSize(new java.awt.Dimension(80, 80));
         sendAttachment.setMinimumSize(new java.awt.Dimension(80, 80));
@@ -393,7 +439,7 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
-        sendButton.setBackground(new java.awt.Color(255, 255, 255));
+        sendButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/send.png"))); // NOI18N
         sendButton.setAlignmentY(0.0F);
         sendButton.setMaximumSize(new java.awt.Dimension(80, 80));
         sendButton.setMinimumSize(new java.awt.Dimension(80, 80));
@@ -481,13 +527,12 @@ public class GUI extends javax.swing.JFrame {
     private void insertTextToPane(String msg, String name, String align) {
         try {
             // Hi?n các text lên c?a s? chat c?a client
-            StyledDocument doc = screenMessagePane.getStyledDocument();
+            StyledDocument doc = currentScreen.getStyledDocument();
             msg = formatMessage(msg);
             SimpleAttributeSet keyWord = new SimpleAttributeSet();
             SimpleAttributeSet keyWordName = new SimpleAttributeSet();
             
             StyleConstants.setLineSpacing(keyWord, (float)0.05);
-            
             
             if (align.equals("right")) {
                 StyleConstants.setAlignment(keyWord, StyleConstants.ALIGN_RIGHT);
@@ -542,6 +587,9 @@ public class GUI extends javax.swing.JFrame {
                         case "createroom":
                             createNewRoom(response[1]);
                             break;
+                        case "invite":
+                            //insert that room to listroom
+                            joinToRoom(response[1]);
                     }
                 }
                 insertTextToPane(mess, name, "left");
@@ -551,6 +599,21 @@ public class GUI extends javax.swing.JFrame {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+    private void joinToRoom(String idRoom){
+        if(roomNameString.isEmpty()){
+                roomNameString = "Room " + idRoom;
+            }
+        JTextPane newMessScreen = new JTextPane();
+        newMessScreen = new javax.swing.JTextPane();
+        newMessScreen.setEditable(false);
+        newMessScreen.setBorder(null);
+        newMessScreen.setFont(new java.awt.Font("Segoe UI Historic", 0, 16));
+        newMessScreen.setAutoscrolls(false);
+        newMessScreen.setText("");
+        listModel.addElement(roomNameString);
+        roomNameHash.put(roomNameString, Integer.parseInt(idRoom));
+        screenStateHash.put(Integer.parseInt(idRoom), newMessScreen);
     }
     private void sendAttachmentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sendAttachmentMouseClicked
         // TODO add your handling code here:
@@ -572,12 +635,14 @@ public class GUI extends javax.swing.JFrame {
             peopleOnlineFrame.setLocation(this.getX() - 290, this.getY());
             peopleOnlineFrame.setSize(300, 700);
             peopleOnlineFrame.setVisible(true);
+            
+            userListModel.addElement(roomNameString);
         }
 
     }//GEN-LAST:event_showPeopleMouseClicked
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_formWindowActivated
 
     private void signInButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_signInButtonMouseClicked
@@ -624,7 +689,6 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void usernameInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameInputActionPerformed
-        // TODO add your handling code here:
 
     }//GEN-LAST:event_usernameInputActionPerformed
 
@@ -661,49 +725,36 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_signUpButtonMouseClicked
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
-        // TODO add your handling code here:
 
     }//GEN-LAST:event_sendButtonActionPerformed
 
     private void roomListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_roomListMouseClicked
         // TODO add your handling code here:
         String select = roomList.getSelectedValue();
-        System.out.println(select);
-        if(select.equals("PUBLIC ROOM")){
-            jScrollPane3.add(screenStateHash.get(0));
-            
-        }
-        else{
-            System.out.println(screenStateHash.get(roomNameHash.get(select)));
-            
-        }
+        currentScreen = screenStateHash.get(roomNameHash.get(select));
+        currentIdRoom = roomNameHash.get(select);
+        jScrollPane3.setViewportView(currentScreen);
     }//GEN-LAST:event_roomListMouseClicked
     private void createNewRoom(String idRoom){
+        if(roomNameString.isEmpty()){
+                roomNameString = "Room " + idRoom;
+            }
         JTextPane newMessScreen = new JTextPane();
-        
         newMessScreen = new javax.swing.JTextPane();
         newMessScreen.setEditable(false);
         newMessScreen.setBorder(null);
-        newMessScreen.setFont(new java.awt.Font("Segoe UI Historic", 0, 16)); // NOI18N
+        newMessScreen.setFont(new java.awt.Font("Segoe UI Historic", 0, 16));
         newMessScreen.setAutoscrolls(false);
-        
-        inputNameRoomFrame.setVisible(true);
-        inputNameRoomFrame.setLocationRelativeTo(this);
-        inputNameRoomFrame.pack();
-        
-        if(!inputNameRoomFrame.isActive()){
-            // luu ten tu bien roomName
-        }
-        
-
+        newMessScreen.setText("");
         listModel.addElement(roomNameString);
-
         roomNameHash.put(roomNameString, Integer.parseInt(idRoom));
-        screenStateHash.put(Integer.parseInt(idRoom), newMessScreen);
+        screenStateHash.put(Integer.parseInt(idRoom), newMessScreen);        
     }
     private void createRoomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createRoomMouseClicked
         // TODO add your handling code here:
-        Client.send("/createroom");
+        inputNameRoomFrame.setVisible(true);
+        inputNameRoomFrame.setLocationRelativeTo(this);
+        inputNameRoomFrame.pack();
     }//GEN-LAST:event_createRoomMouseClicked
     
     private String roomNameString = "";
@@ -711,10 +762,28 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         roomNameString = inputRoomName.getText();
         inputRoomName.setText("");
-        
+        inputNameRoomFrame.setVisible(false);
         inputNameRoomFrame.dispose();
         
+        Client.send("/createroom");
     }//GEN-LAST:event_saveRoomNameMouseClicked
+
+    private void addUserToRoomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addUserToRoomMouseClicked
+        // TODO add your handling code here:
+        if(roomNameHash.get("PUBLIC ROOM") != currentIdRoom){
+            inviteToRoom.setVisible(true);
+            inviteToRoom.setLocationRelativeTo(this);
+            inviteToRoom.pack();
+        }   
+    }//GEN-LAST:event_addUserToRoomMouseClicked
+
+    private void inviteButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inviteButtonMouseClicked
+        // TODO add your handling code here:
+        String username = inputNameOfUser.getText();
+        Client.send("/invite " + currentIdRoom + " " + username);
+        inputNameOfUser.setText("");
+        inviteToRoom.dispose();
+    }//GEN-LAST:event_inviteButtonMouseClicked
     private String formatMessage(String mess) {
         int count = 0;
         for (int i = 0; i < mess.length(); i++) {
@@ -733,29 +802,24 @@ public class GUI extends javax.swing.JFrame {
         return mess;
     }
 
-    private void sendButtonMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_sendAttButtonMouseClicked
-        // TODO add your handling code here:
-        try {
-            String mess = messageType.getText();
-            StyledDocument doc = screenMessagePane.getStyledDocument();
-            mess = formatMessage(mess);
-            if (!mess.isEmpty()) {
-                insertTextToPane(mess, "You", "right");
-            }
-            Client.send(mess);
-            messageType.setText(null);
-            revalidate();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void sendButtonMouseClicked(java.awt.event.MouseEvent evt) {
+        String mess = messageType.getText();
+        mess = formatMessage(mess);
+        if (!mess.isEmpty()) {
+            insertTextToPane(mess, "You", "right");
         }
-    }// GEN-LAST:event_sendAttButtonMouseClicked
+        if(currentIdRoom != 0){
+            mess = "/room " + currentIdRoom + " " + mess;
+        }
+        Client.send(mess);
+        
+        messageType.setText(null);
+        revalidate();    
+    }
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         try {
-            UIManager.setLookAndFeel( new FlatIntelliJLaf() );
+            UIManager.setLookAndFeel( new FlatLightLaf() );
         } catch( UnsupportedLookAndFeelException ex ) {
             System.err.println( "Failed to initialize LaF" );
         }
@@ -771,17 +835,22 @@ public class GUI extends javax.swing.JFrame {
     }
     
     javax.swing.DefaultListModel<String> listModel = new javax.swing.DefaultListModel<>();
+    javax.swing.DefaultListModel<String> userListModel = new javax.swing.DefaultListModel<>();
     private HashMap<Integer, JTextPane> screenStateHash = new HashMap<>();
     private HashMap<String, Integer> roomNameHash = new HashMap<>();
-    private JTextPane currentScreen;
+    private JTextPane currentScreen = new JTextPane();
+    private int currentIdRoom;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFrame ChooseFileFrame;
+    private javax.swing.JButton addUserToRoom;
     private javax.swing.JButton createRoom;
+    private javax.swing.JTextField inputNameOfUser;
     private javax.swing.JFrame inputNameRoomFrame;
     private javax.swing.JTextField inputRoomName;
+    private javax.swing.JButton inviteButton;
+    private javax.swing.JFrame inviteToRoom;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JList<String> jList2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -805,6 +874,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton showPeople;
     private javax.swing.JButton signInButton;
     private javax.swing.JButton signUpButton;
+    private javax.swing.JList<String> userOnlineList;
     private javax.swing.JTextField usernameInput;
     private javax.swing.JFrame wrongInputFrame;
     // End of variables declaration//GEN-END:variables
