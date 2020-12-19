@@ -17,7 +17,7 @@ class Server {
     private static ArrayList<ClientHandle> clients = new ArrayList<>();
     private static HashMap<Integer, RoomChat> rooms = new HashMap<>();
     
-    private static ExecutorService pool = Executors.newFixedThreadPool(4);
+    private static ExecutorService pool = Executors.newFixedThreadPool(8);
 
     public static void main(String[] args) throws IOException {
         ServerSocket listener = new ServerSocket(PORT);

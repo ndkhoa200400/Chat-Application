@@ -1,26 +1,23 @@
- import java.util.ArrayList;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
-
-import com.google.gson.Gson;
-
 import java.util.concurrent.ExecutorService;
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
  * Server
  * Start Server 
- * Listen to clients' connection
+ * Listen to clients connection
  */
 class Server {
-
     private static final int PORT = 9090;
     private static ArrayList<ClientHandle> clients = new ArrayList<>();
     private static HashMap<Integer, RoomChat> rooms = new HashMap<>();
     
-    private static ExecutorService pool = Executors.newFixedThreadPool(4);
+    private static ExecutorService pool = Executors.newFixedThreadPool(8);
 
     public static void main(String[] args) throws IOException {
         ServerSocket listener = new ServerSocket(PORT);
@@ -38,5 +35,4 @@ class Server {
             pool.execute(clientThread);
         }
     }
- 
 }

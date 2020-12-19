@@ -22,7 +22,7 @@ public class Client {
     // private static PrintWriter out; // Send this client's msg to the server
     private static ObjectOutputStream fout; // send bytes of file to server
     private static ObjectInputStream fin;
-    private static Account account;
+    public static Account account;
     private static Socket server;
 
     public static String getMode(String username) {
@@ -50,11 +50,37 @@ public class Client {
 
         if (isValid.equals("true")) {
             isAccountValid = true;
-            account = new Account(username, password, mode);
+            account = new Account(username, password);
 
         }
 
         return isAccountValid;
+    }
+
+    public static boolean signUp(String username, String password) throws IOException, ClassNotFoundException {
+        boolean isAccountValid = false;
+        do {
+
+            String mode = getMode(username);
+
+            // System.out.println("Your profile picture: ");
+            // String filePath = keyboard.readLine();
+            // file obj = new file();
+            // obj.getFileInfo(filePath,"./");
+            out.writeUTF("0");
+            out.writeUTF(username);
+            out.writeUTF(password);
+            out.writeUTF(mode);
+
+            // String isValid = in.readLine();
+            String isValid = in.readUTF();
+            if (isValid.equals("true")) {
+                isAccountValid = true;
+                account = new Account(username, password);
+            }
+        } while (!isAccountValid);
+        return isAccountValid;
+
     }
 
     public static void signUp(BufferedReader keyboard) throws IOException, ClassNotFoundException {
@@ -81,7 +107,7 @@ public class Client {
             String isValid = in.readUTF();
             if (isValid.equals("true")) {
                 isAccountValid = true;
-                account = new Account(username, password, mode);
+                account = new Account(username, password);
             } else {
                 System.out.println("Username has already been taken");
             }
@@ -109,7 +135,7 @@ public class Client {
 
             if (isValid.equals("true")) {
                 isAccountValid = true;
-                account = new Account(username, password, mode);
+                account = new Account(username, password);
 
             }
             if (!isAccountValid) {
@@ -167,8 +193,13 @@ public class Client {
         in = new DataInputStream(server.getInputStream());
     }
 
-    static void send(String message) throws IOException {
-        out.writeUTF(message);
+    static void send(String message) {
+        try {
+            out.writeUTF(message);
+        } catch (Exception ex) {
+
+        }
+
     }
 
     static void send(Socket server) throws IOException {
@@ -199,6 +230,20 @@ public class Client {
         }
     }
 
+     static String listen() {
+
+        try {
+           
+            String serverResponse = in.readUTF();
+            
+            return serverResponse;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     static void listen(Socket server) {
 
         try {
@@ -257,5 +302,14 @@ public class Client {
         }
         return isValid;
     }
-
+    
+    public static void close()
+    {
+        try {
+            server.close();
+            out.close();
+            in.close();
+        } catch (Exception e) {
+        }
+    }
 }

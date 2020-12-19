@@ -22,7 +22,7 @@ public class Client {
     // private static PrintWriter out; // Send this client's msg to the server
     private static ObjectOutputStream fout; // send bytes of file to server
     private static ObjectInputStream fin;
-    private static Account account;
+    public static Account account;
     private static Socket server;
 
     public static String getMode(String username) {
@@ -302,5 +302,14 @@ public class Client {
         }
         return isValid;
     }
-
+    
+    public static void close()
+    {
+        try {
+            server.close();
+            out.close();
+            in.close();
+        } catch (Exception e) {
+        }
+    }
 }
