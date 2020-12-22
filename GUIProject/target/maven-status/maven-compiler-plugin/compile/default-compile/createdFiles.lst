@@ -2,14 +2,15 @@ GUI$6.class
 GUI$1.class
 GUI$8.class
 file.class
+GUI$16.class
 test$3.class
 GUI$14.class
 GUI$4.class
 Account.class
 GUI$9.class
+GUI$17.class
 GUI$7.class
 Client.class
-main\java\javaproject\guiproject\NewMain.class
 GUI$2.class
 test$2.class
 RoomChat.class
@@ -21,6 +22,8 @@ GUI$13.class
 GUI$3.class
 Server.class
 test.class
+GUI$15.class
+GUI$18.class
 GUI$5.class
 GUI$10.class
 SerializedName.class
