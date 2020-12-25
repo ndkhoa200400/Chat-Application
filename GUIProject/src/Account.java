@@ -195,4 +195,36 @@ public class Account {
             writer.close();
         }
     }
+
+    void changeAvatar(String filePath) throws IOException
+    {
+        file img = new file();
+        img.getFileInfo(filePath);
+        FileWriter writer = null;
+        try{
+           
+            try (FileReader reader = new FileReader("./database/accounts.json")) {
+                // Read JSON file
+
+                JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
+                if (obj == null) obj = new JsonArray();
+                for (int i = 0; i < obj.size(); i++) {
+                    JsonObject account = (JsonObject) obj.get(i);
+                    if (account.get("username").getAsString().equals(this.username))
+                        account.addProperty("avatar_img", gson.toJson(img));
+                }
+                // temp.addProperty("username", username);
+                // temp.addProperty("password", bCryptPasswordEncoder.encode(password));
+                // obj.add(temp);
+                writer = new FileWriter("./database/accounts.json", false);
+                gson.toJson(obj, writer);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }}catch(Exception e)
+        {
+            e.printStackTrace();
+        }finally{
+            writer.close();
+        }
+    }
 }
