@@ -105,7 +105,6 @@ public class ClientHandle implements Runnable {
                 String password = in.readUTF();
                 String role = in.readUTF();
                 if (mode.equals("0")) {
-
                     isAccountValid = checkSignUp(username, password);
                 } else {
                     isAccountValid = checkSignIn(username, password);

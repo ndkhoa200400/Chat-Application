@@ -1,6 +1,7 @@
 
 import com.formdev.flatlaf.*;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -14,12 +15,15 @@ import javax.swing.text.StyledDocument;
 public class GUI extends javax.swing.JFrame implements Runnable {
 
     Thread listeningHandler;
+    private String urlAvatar = new String("./database/user_img/student.png");
+    private Avatar avatar = new Avatar(urlAvatar, 100, 100);
 
     /**
      * Creates new form GUI
      */
     public GUI() throws IOException {
         initComponents();
+        jPanelAva.add(avatar);
         screenStateHash.put(0, screenMessagePane);
         currentScreen = screenMessagePane;
         currentIdRoom = 0;
@@ -65,8 +69,8 @@ public class GUI extends javax.swing.JFrame implements Runnable {
         jScrollPane2 = new javax.swing.JScrollPane();
         roomList = new javax.swing.JList<>();
         nameRoomPanel = new javax.swing.JPanel();
-        addUserToRoom = new javax.swing.JButton();
         lblNameRoom = new javax.swing.JLabel();
+        addUserToRoom = new javax.swing.JButton();
         messageToolPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         messageType = new javax.swing.JTextArea();
@@ -74,6 +78,11 @@ public class GUI extends javax.swing.JFrame implements Runnable {
         sendButton = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         screenMessagePane = new javax.swing.JTextPane();
+        jPanel5 = new javax.swing.JPanel();
+        jPanelAva = new javax.swing.JPanel();
+        usernameLabel = new javax.swing.JLabel();
+        modeLabel = new javax.swing.JLabel();
+        changeAvabtn = new javax.swing.JButton();
 
         jFileChooser1.setCurrentDirectory(new java.io.File("C:\\"));
 
@@ -331,6 +340,9 @@ public class GUI extends javax.swing.JFrame implements Runnable {
             roomPanel.setMinimumSize(new java.awt.Dimension(250, 600));
             roomPanel.setName(""); // NOI18N
 
+            jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+
+            showPeople.setBackground(new java.awt.Color(255, 255, 255));
             showPeople.setIcon(new javax.swing.ImageIcon(getClass().getResource("/group.png"))); // NOI18N
             showPeople.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -354,9 +366,11 @@ public class GUI extends javax.swing.JFrame implements Runnable {
             jPanel1Layout.setHorizontalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
                     .addComponent(showPeople, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(createRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(createRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
             );
             jPanel1Layout.setVerticalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -407,15 +421,15 @@ public class GUI extends javax.swing.JFrame implements Runnable {
             nameRoomPanel.setAlignmentY(0.0F);
             nameRoomPanel.setPreferredSize(new java.awt.Dimension(550, 50));
 
+            lblNameRoom.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+            lblNameRoom.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            lblNameRoom.setText("PUBLIC ROOM");
+
             addUserToRoom.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseClicked(java.awt.event.MouseEvent evt) {
                     addUserToRoomMouseClicked(evt);
                 }
             });
-
-            lblNameRoom.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-            lblNameRoom.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-            lblNameRoom.setText("PUBLIC ROOM");
 
             javax.swing.GroupLayout nameRoomPanelLayout = new javax.swing.GroupLayout(nameRoomPanel);
             nameRoomPanel.setLayout(nameRoomPanelLayout);
@@ -424,16 +438,16 @@ public class GUI extends javax.swing.JFrame implements Runnable {
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, nameRoomPanelLayout.createSequentialGroup()
                     .addGap(185, 185, 185)
                     .addComponent(lblNameRoom)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
                     .addComponent(addUserToRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
             );
             nameRoomPanelLayout.setVerticalGroup(
                 nameRoomPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(addUserToRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
                 .addGroup(nameRoomPanelLayout.createSequentialGroup()
                     .addGap(15, 15, 15)
                     .addComponent(lblNameRoom)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addContainerGap(16, Short.MAX_VALUE))
+                .addComponent(addUserToRoom, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
             );
 
             messageToolPanel.setBackground(new java.awt.Color(255, 255, 255));
@@ -494,7 +508,7 @@ public class GUI extends javax.swing.JFrame implements Runnable {
                 messageToolPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(messageToolPanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -522,26 +536,89 @@ public class GUI extends javax.swing.JFrame implements Runnable {
             screenMessagePane.setFont(new java.awt.Font("Segoe UI Historic", 0, 16)); // NOI18N
             jScrollPane3.setViewportView(screenMessagePane);
 
+            jPanel5.setBackground(new java.awt.Color(255, 255, 255));
+
+            jPanelAva.setBackground(new java.awt.Color(255, 255, 255));
+
+            javax.swing.GroupLayout jPanelAvaLayout = new javax.swing.GroupLayout(jPanelAva);
+            jPanelAva.setLayout(jPanelAvaLayout);
+            jPanelAvaLayout.setHorizontalGroup(
+                jPanelAvaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(0, 0, Short.MAX_VALUE)
+            );
+            jPanelAvaLayout.setVerticalGroup(
+                jPanelAvaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(0, 138, Short.MAX_VALUE)
+            );
+
+            usernameLabel.setFont(new java.awt.Font("Roboto", 1, 12)); // NOI18N
+            usernameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            usernameLabel.setText("Username");
+
+            modeLabel.setFont(new java.awt.Font("Roboto", 0, 12)); // NOI18N
+            modeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            modeLabel.setText("Student");
+
+            changeAvabtn.setText("Change Avatar");
+            changeAvabtn.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseReleased(java.awt.event.MouseEvent evt) {
+                    changeAvabtnMouseReleased(evt);
+                }
+            });
+
+            javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+            jPanel5.setLayout(jPanel5Layout);
+            jPanel5Layout.setHorizontalGroup(
+                jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel5Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(usernameLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
+                        .addComponent(jPanelAva, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(modeLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(changeAvabtn, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(37, 37, 37))
+            );
+            jPanel5Layout.setVerticalGroup(
+                jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel5Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanelAva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(modeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(changeAvabtn)
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            );
+
             javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
             getContentPane().setLayout(layout);
             layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addComponent(roomPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(nameRoomPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 558, Short.MAX_VALUE)
-                        .addComponent(messageToolPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane3)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(nameRoomPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 472, Short.MAX_VALUE)
+                        .addComponent(messageToolPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 472, Short.MAX_VALUE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             );
             layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(roomPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createSequentialGroup()
                     .addComponent(nameRoomPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, 0)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
                     .addGap(0, 0, 0)
                     .addComponent(messageToolPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             );
 
             pack();
@@ -763,6 +840,11 @@ public class GUI extends javax.swing.JFrame implements Runnable {
                 loginFrame.setVisible(false);
                 loginFrame.dispose();
                 this.setTitle("Chatterbox - User: " + Client.account.getUserName());
+                this.usernameLabel.setText(Client.account.getUserName());
+                this.modeLabel.setText(Client.account.getMode());
+                urlAvatar = Client.account.getAvatar_img() ;
+                avatar.loadAvatar(urlAvatar, 100, 100);
+                repaint();
                 this.setVisible(true);
                 listeningHandler.start();
             } else {
@@ -930,6 +1012,26 @@ public class GUI extends javax.swing.JFrame implements Runnable {
 
 
     }//GEN-LAST:event_showPeopleActionPerformed
+
+    private void changeAvabtnMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_changeAvabtnMouseReleased
+        JFileChooser chooser = new JFileChooser();
+        chooser.setName("Chooser avatar...");
+        chooser.setSize(500, 400);
+        chooser.setVisible(true);
+        int value = chooser.showOpenDialog(this);
+        if (value == JFileChooser.APPROVE_OPTION)
+        {
+            File file = chooser.getSelectedFile();
+            urlAvatar = file.getPath();
+            avatar.loadAvatar(urlAvatar, 100, 100);
+            repaint();
+        }     
+        try {
+            Client.account.changeAvatar(urlAvatar);
+        } catch (IOException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_changeAvabtnMouseReleased
     private String formatMessage(String mess) {
         int count = 0;
         for (int i = 0; i < mess.length(); i++) {
@@ -994,6 +1096,7 @@ public class GUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JFrame ChooseFileFrame;
     private javax.swing.JButton addUserToRoom;
     private javax.swing.JButton btnSaveRoomName;
+    private javax.swing.JButton changeAvabtn;
     private javax.swing.JButton createRoom;
     private javax.swing.JTextField inputNameOfUser;
     private javax.swing.JFrame inputNameRoomFrame;
@@ -1007,6 +1110,8 @@ public class GUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanelAva;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -1015,6 +1120,7 @@ public class GUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JFrame loginFrame;
     private javax.swing.JPanel messageToolPanel;
     private javax.swing.JTextArea messageType;
+    private javax.swing.JLabel modeLabel;
     private javax.swing.JPanel nameRoomPanel;
     private javax.swing.JPasswordField passwordInput;
     private javax.swing.JFrame peopleOnlineFrame;
@@ -1028,6 +1134,7 @@ public class GUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JButton signUpButton;
     private javax.swing.JList<String> userOnlineList;
     private javax.swing.JTextField usernameInput;
+    private javax.swing.JLabel usernameLabel;
     private javax.swing.JFrame wrongInputFrame;
     // End of variables declaration//GEN-END:variables
 

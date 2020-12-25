@@ -14,10 +14,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class Account {
     @SerializedName(value = "username")
-    private String username;
+    private static String username;
 
     @SerializedName(value = "password")
-    private String password;
+    private static String password;
+
+    @SerializedName(value = "mode")
+    private static String mode;
+
+    @SerializedName(value = "avatar_img")
+    private static String avatar_img;
 
     private static String filepath = ".\\src\\database\\accounts.json";
     private static BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
@@ -27,36 +33,39 @@ public class Account {
     public Account(String username, String password) {
         this.username = username;
         this.password = password;
+        setMode(username);
+        setAvatarPath(mode);
     }
     public boolean checkPassword(String p)
     {
         return this.password.equals(p);
     }
-    // static boolean isExisted(String username)
-    // {
-    // @SuppressWarnings("unchecked")
-    // BufferedReader reader;
-    // try {
-    // // reader = new BufferedReader(new FileReader("accounts.txt"));
-    // reader = new BufferedReader(new FileReader("./database/accounts.json"));
-    // String line = reader.readLine();
-    // while (line != null) {
-    // if (line.equals(username)) {
-    // reader.close();
-    // return true;
-    // }
-    // // read next line
-    // line = reader.readLine();
-    // line = reader.readLine();
-    // }
-    // reader.close();
+   
+    public static String setMode(String username) {
+        if (username.startsWith("S")) {
+            mode = "Student";
+        }
+        if (username.startsWith("T")) {
+            mode = "Teacher";
+        } else {
+            mode = "Staff";
+        }
+        return mode;
+    }
 
-    // } catch (Exception e) {
-    // //TODO: handle exception
-    // System.err.println("ERROR when checking existing accounts");
-    // }
-    // return false;
-    // }
+    static String setAvatarPath(String mode){
+        if (mode.equals("Student")) {
+            avatar_img = "./database/user_img/student.png";
+        }
+        if (username.equals("Teacher")) {
+            avatar_img =  "./database/user_img/teacher.png";
+        }
+        else{
+            avatar_img ="./database/user_img/staff.png";
+        }
+        return avatar_img;
+    }
+
     static boolean isExisted(String username) {
 
         try (FileReader reader = new FileReader(filepath)) {
@@ -148,6 +157,8 @@ public class Account {
                 JsonObject temp = new JsonObject();
                 temp.addProperty("username", username);
                 temp.addProperty("password", bCryptPasswordEncoder.encode(password));
+                temp.addProperty("mode", setMode(username));
+                temp.addProperty("avatar_img",setAvatarPath(mode) );
                 obj.add(temp);
                 writer = new FileWriter(filepath, false);
                 gson.toJson(obj, writer);
@@ -163,6 +174,12 @@ public class Account {
 
     String getUserName() {
         return this.username;
+    }
+    public static String getAvatar_img() {
+        return avatar_img;
+    }
+    public static String getMode() {
+        return mode;
     }
 
     void changePassword(String newPassword) throws IOException
@@ -201,9 +218,10 @@ public class Account {
         file img = new file();
         img.getFileInfo(filePath);
         FileWriter writer = null;
+        
         try{
            
-            try (FileReader reader = new FileReader("./database/accounts.json")) {
+            try (FileReader reader = new FileReader("../database/accounts.json")) {
                 // Read JSON file
 
                 JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
@@ -213,6 +231,7 @@ public class Account {
                     if (account.get("username").getAsString().equals(this.username))
                         account.addProperty("avatar_img", gson.toJson(img));
                 }
+                avatar_img = filePath;
                 // temp.addProperty("username", username);
                 // temp.addProperty("password", bCryptPasswordEncoder.encode(password));
                 // obj.add(temp);

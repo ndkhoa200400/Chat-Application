@@ -25,21 +25,11 @@ public class Client {
     public static Account account;
     private static Socket server;
 
-    public static String getMode(String username) {
-        if (username.startsWith("S")) {
-            return "student";
-        }
-        if (username.startsWith("T")) {
-            return "teacher";
-        } else {
-            return "staff";
-        }
-    }
 
     public static boolean logIn(String username, String password) throws IOException, ClassNotFoundException {
         boolean isAccountValid = false;
 
-        String mode = getMode(username);
+        String mode = Account.setMode(username);
 
         out.writeUTF("1");
         out.writeUTF(username);
@@ -61,7 +51,7 @@ public class Client {
         boolean isAccountValid = false;
         do {
 
-            String mode = getMode(username);
+            String mode = Account.setMode(username);
 
             // System.out.println("Your profile picture: ");
             // String filePath = keyboard.readLine();
@@ -92,7 +82,7 @@ public class Client {
             System.out.print("Your password: ");
             String password = keyboard.readLine();
 
-            String mode = getMode(username);
+            String mode = Account.setMode(username);
 
             // System.out.println("Your profile picture: ");
             // String filePath = keyboard.readLine();
@@ -124,7 +114,7 @@ public class Client {
             String username = keyboard.readLine();
             System.out.print("Password: ");
             String password = keyboard.readLine();
-            String mode = getMode(username);
+            String mode = Account.setMode(username);
 
             out.writeUTF("1");
             out.writeUTF(username);
