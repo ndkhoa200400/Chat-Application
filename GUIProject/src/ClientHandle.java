@@ -206,6 +206,7 @@ public class ClientHandle implements Runnable {
                         case "changepassword":
                             changePassword();
                             break;
+
                         default:
                             // this.sender.println("Command is invalid");
                             this.out.writeUTF("Command is invalid");
