@@ -88,7 +88,7 @@ public class file implements Serializable {
         String extension = "";
         int i = this.getFilename().lastIndexOf('.');
         if (i > 0) {
-            extension = extension.substring(i+1);
+            extension = this.getFilename().substring(i+1);
         }
         this.setFileType(extension);
         return fileType;
@@ -146,7 +146,8 @@ public class file implements Serializable {
             this.setFileType(this.getFileType());
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
+            
         }
     }
 

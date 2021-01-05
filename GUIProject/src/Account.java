@@ -25,7 +25,7 @@ public class Account {
     @SerializedName(value = "avatar_img")
     private static String avatar_img;
 
-    private static String filepath = ".\\src\\database\\accounts.json";
+    private static String filepath = "./src/database/accounts.json";
     private static BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     private static Gson gson = new Gson();
@@ -55,13 +55,13 @@ public class Account {
 
     static String setAvatarPath(String mode){
         if (mode.equals("Student")) {
-            avatar_img = "./database/user_img/student.png";
+            avatar_img = "./src/database/user_img/student.png";
         }
         if (username.equals("Teacher")) {
-            avatar_img =  "./database/user_img/teacher.png";
+            avatar_img =  "./src/database/user_img/teacher.png";
         }
         else{
-            avatar_img ="./database/user_img/staff.png";
+            avatar_img ="./src/database/user_img/staff.png";
         }
         return avatar_img;
     }
@@ -221,7 +221,7 @@ public class Account {
         
         try{
            
-            try (FileReader reader = new FileReader("../database/accounts.json")) {
+            try (FileReader reader = new FileReader("./src/database/accounts.json")) {
                 // Read JSON file
 
                 JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
@@ -229,13 +229,13 @@ public class Account {
                 for (int i = 0; i < obj.size(); i++) {
                     JsonObject account = (JsonObject) obj.get(i);
                     if (account.get("username").getAsString().equals(this.username))
-                        account.addProperty("avatar_img", gson.toJson(img));
+                        account.addProperty("avatar_img", filePath);
                 }
                 avatar_img = filePath;
                 // temp.addProperty("username", username);
                 // temp.addProperty("password", bCryptPasswordEncoder.encode(password));
                 // obj.add(temp);
-                writer = new FileWriter("./database/accounts.json", false);
+                writer = new FileWriter("./src/database/accounts.json", false);
                 gson.toJson(obj, writer);
         } catch (Exception e) {
             e.printStackTrace();
