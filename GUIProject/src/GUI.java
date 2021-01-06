@@ -2,6 +2,7 @@
 import com.formdev.flatlaf.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -510,11 +511,8 @@ public class GUI extends javax.swing.JFrame implements Runnable {
         messageType.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         messageType.setMargin(new java.awt.Insets(10, 10, 10, 10));
         messageType.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                messageTypeKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                messageTypeKeyTyped(evt);
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                messageTypeKeyReleased(evt);
             }
         });
         jScrollPane1.setViewportView(messageType);
@@ -697,14 +695,6 @@ public class GUI extends javax.swing.JFrame implements Runnable {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void messageTypeKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTypeKeyTyped
-        // TODO add your handling code here
-        java.awt.event.MouseEvent evt1 = null;
-        if (evt.getKeyChar() == '\n') {
-            sendButtonMouseClicked(evt1);
-        }
-    }//GEN-LAST:event_messageTypeKeyTyped
 
     private void showOnline(String users) {
 
@@ -1059,10 +1049,6 @@ public class GUI extends javax.swing.JFrame implements Runnable {
         inviteToRoom.dispose();
     }//GEN-LAST:event_inviteButtonMouseClicked
 
-    private void messageTypeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTypeKeyPressed
-
-    }//GEN-LAST:event_messageTypeKeyPressed
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 
         this.listeningHandler.stop();
@@ -1119,6 +1105,18 @@ public class GUI extends javax.swing.JFrame implements Runnable {
             this.signInButtonMouseClicked(evt1);
         }
     }//GEN-LAST:event_passwordInputKeyPressed
+
+    private void messageTypeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTypeKeyReleased
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER && (evt.getModifiers() & InputEvent.SHIFT_MASK) != 0){
+             this.messageType.setText(this.messageType.getText() + '\n');
+        }
+        else 
+        if (evt.getKeyChar() == '\n' && (evt.getModifiers() & InputEvent.SHIFT_MASK) == 0) {
+            java.awt.event.MouseEvent evt1 = null;
+            sendButtonMouseClicked(evt1);
+        }
+    }//GEN-LAST:event_messageTypeKeyReleased
     private String formatMessage(String mess) {
         int count = 0;
         for (int i = 0; i < mess.length(); i++) {
