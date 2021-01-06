@@ -168,7 +168,8 @@ public class Account {
         {
             e.printStackTrace();
         }finally{
-            writer.close();
+            if(writer != null)
+                writer.close();
         }
     }
 
@@ -238,10 +239,8 @@ public class Account {
                 writer = new FileWriter("./src/database/accounts.json", false);
                 gson.toJson(obj, writer);
         } catch (Exception e) {
-            e.printStackTrace();
         }}catch(Exception e)
         {
-            e.printStackTrace();
         }finally{
             writer.close();
         }
