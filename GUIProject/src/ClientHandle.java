@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 /**
  * ClientHandle Used to send one client's msg to other clients
  */
@@ -17,6 +21,8 @@ public class ClientHandle implements Runnable {
     private Account account;
     private ObjectInputStream fin;
     private ObjectOutputStream fout;
+    private ArrayList<file> fileList = new ArrayList<file>();
+    private Gson gson = new Gson();
 
     // Private room chat
     private final HashMap<Integer, RoomChat> rooms;
@@ -178,10 +184,14 @@ public class ClientHandle implements Runnable {
 
                         case "sendfile":
                             request = account.getUserName() + " has already sent a new attachment.";
-//                            if (recvFile(messages[1], messages[2]))
-//                                sendToAll(request);
-//                            else
-//                                this.out.writeUTF("Failed to send file");
+                            if (recvFile(this.client,request.substring(indexOfCommand + 1)))
+                                sendToAll(request);
+                            else
+                                this.out.writeUTF("Failed to send file");
+                            break;
+                        
+                        case "receivefile hinh.jpg":
+                            sendFile(this.client, request.substring(indexOfCommand + 1));
                             break;
 
                         case "showroom":
@@ -250,20 +260,68 @@ public class ClientHandle implements Runnable {
             out.writeUTF("Changed password successfully");
         }
     }
+    public void sendFile(Socket server,String fileName) {
 
-    boolean recvFile(String src, String des) throws IOException {
+        try {
+            fout = new ObjectOutputStream(server.getOutputStream());
+            fout.flush();
+            // fin = new ObjectInputStream(server.getInputStream());
+            for (file x : fileList){
+                if (x.getFilename().equals(fileName)
+                     && x.getRecver().equals("all")){
+                    // send file content
+                    fout.writeObject(x);
+                    fout.flush();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    boolean recvFile(Socket client, String src) throws IOException {
         file newFile;
         boolean isValid = false;
-        this.fin = new ObjectInputStream(this.client.getInputStream());
+        this.fin = new ObjectInputStream(client.getInputStream());
+        FileWriter writer = null;
         try {
 
             // this.fout = new ObjectOutputStream(client.getOutputStream());
             newFile = (file) fin.readObject();
             if (newFile != null) {
-                createFile(newFile);
+                newFile.setDestinationDirectory("./database/");
+                newFile.setCommunication(this.getUsername(), "all");
+                newFile.createFile();
+                // save to json
+                try (FileReader reader = new FileReader("./database/fileList.json")) {
+                    // Read JSON file
+                    JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
+                    if (obj == null) obj = new JsonArray();
+                    JsonObject temp = new JsonObject();
+
+                    temp.addProperty("name", newFile.getFilename());
+                    temp.addProperty("type", newFile.getFileType());
+                    temp.addProperty("des", newFile.getDestinationDirectory());
+                    temp.addProperty("size", newFile.getFileSize());
+                    temp.addProperty("size", newFile.getFileSize());
+                    temp.addProperty("date", gson.toJson(newFile.getDate()));
+                    temp.addProperty("sender", newFile.getSender());
+                    temp.addProperty("receiver", newFile.getRecver());
+
+                    obj.add(temp);
+
+                    writer = new FileWriter("./database/fileList.json", false);
+                    gson.toJson(obj, writer);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }finally{
+                    writer.close();
+                }
                 // send confirmation
                 newFile.setStatus("Success");
                 isValid = true;
+                fileList.add(newFile);
             }
         } catch (ClassNotFoundException | IOException e) {
             // TODO Auto-generated catch block
@@ -271,6 +329,7 @@ public class ClientHandle implements Runnable {
         }
         return isValid;
     }
+
 
     public boolean createFile(file newFile) {
         BufferedOutputStream bos = null;

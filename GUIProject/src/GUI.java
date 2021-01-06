@@ -767,6 +767,9 @@ public class GUI extends javax.swing.JFrame implements Runnable {
                     if (split > 0) {
                         name = mess.substring(0, split);
                         mess = mess.substring(split + 1);
+
+                        //if send file to all
+                      
                     }
                 }
 
