@@ -762,7 +762,8 @@ public class GUI extends javax.swing.JFrame implements Runnable {
                 // if send to public chat => mess :"username: msg"
                 // res[0]: destication
                 // res[1]: username: msg
-
+                System.out.println("sendfile " + mess);
+                
                 String res[] = mess.split("-");
                 String destination = "0";
                 int split;
@@ -821,6 +822,20 @@ public class GUI extends javax.swing.JFrame implements Runnable {
 
                             showOnline(mess.substring(usersIndex + 1));
                             break;
+                        case "sendfile": //add files have been sent to {listAtt}
+                            System.out.println("sendfile " + mess);
+                            String newMess = response[1] + " has sent a new file: " + response[2];
+                            this.insertTextToPane(newMess, name, "left", this.screenStateHash.get(0));
+                            //then add to listAtt
+                            //void addToListAtt(String fileName); fileName has been split from filePath(response[2]).
+                            
+                            break;
+                        case "receive": //download the selected file in listAtt
+                            //get the selected fileName in listAtt
+                            //then send it to sever
+                            //Client.sendFile(server, fileName);
+                            
+                            break;
                         default:
                             insertTextToPane(mess, name, "left", this.screenStateHash.get(0));
                     }
@@ -838,6 +853,7 @@ public class GUI extends javax.swing.JFrame implements Runnable {
             }
 
         } catch (NumberFormatException ex) {
+            ex.printStackTrace();
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

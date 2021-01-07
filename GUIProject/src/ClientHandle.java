@@ -183,13 +183,15 @@ public class ClientHandle implements Runnable {
                             break;
 
                         case "sendfile":
-                            request = account.getUserName() + " has already sent a new attachment.";
-                            if (recvFile(this.client,request.substring(indexOfCommand + 1)))
-                                sendToAll(request);
-                            else
+                            //request = account.getUserName() + " has already sent a new attachment.";
+                            System.out.println("Client handle: path file: " + request.substring(indexOfCommand + 1));
+                            if (recvFile(this.client, request.substring(indexOfCommand + 1))) {
+                                this.out.writeUTF("sendfile " + account.getUserName() + " " + request.substring(indexOfCommand + 1));
+                            } else {
                                 this.out.writeUTF("Failed to send file");
+                            }
                             break;
-                        
+
                         case "receivefile hinh.jpg":
                             sendFile(this.client, request.substring(indexOfCommand + 1));
                             break;
@@ -231,7 +233,8 @@ public class ClientHandle implements Runnable {
 
         } catch (IOException | NumberFormatException e) {
             System.err.println("IO exception in client handler");
-            System.err.println(e.getStackTrace());
+            e.getStackTrace();
+            e.printStackTrace();
         } finally {
             for (RoomChat room : this.rooms.values()) {
                 room.remove(this);
@@ -260,15 +263,16 @@ public class ClientHandle implements Runnable {
             out.writeUTF("Changed password successfully");
         }
     }
-    public void sendFile(Socket server,String fileName) {
+
+    public void sendFile(Socket server, String fileName) {
 
         try {
             fout = new ObjectOutputStream(server.getOutputStream());
             fout.flush();
             // fin = new ObjectInputStream(server.getInputStream());
-            for (file x : fileList){
+            for (file x : fileList) {
                 if (x.getFilename().equals(fileName)
-                     && x.getRecver().equals("all")){
+                        && x.getRecver().equals("all")) {
                     // send file content
                     fout.writeObject(x);
                     fout.flush();
@@ -283,6 +287,7 @@ public class ClientHandle implements Runnable {
         file newFile;
         boolean isValid = false;
         this.fin = new ObjectInputStream(client.getInputStream());
+
         FileWriter writer = null;
         try {
 
@@ -293,10 +298,12 @@ public class ClientHandle implements Runnable {
                 newFile.setCommunication(this.getUsername(), "all");
                 newFile.createFile();
                 // save to json
-                try (FileReader reader = new FileReader("./database/fileList.json")) {
+                try ( FileReader reader = new FileReader("./database/fileList.json")) {
                     // Read JSON file
                     JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
-                    if (obj == null) obj = new JsonArray();
+                    if (obj == null) {
+                        obj = new JsonArray();
+                    }
                     JsonObject temp = new JsonObject();
 
                     temp.addProperty("name", newFile.getFilename());
@@ -312,10 +319,9 @@ public class ClientHandle implements Runnable {
 
                     writer = new FileWriter("./database/fileList.json", false);
                     gson.toJson(obj, writer);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                }finally{
+                } finally {
                     writer.close();
                 }
                 // send confirmation
@@ -329,7 +335,6 @@ public class ClientHandle implements Runnable {
         }
         return isValid;
     }
-
 
     public boolean createFile(file newFile) {
         BufferedOutputStream bos = null;
