@@ -204,7 +204,7 @@ public class Client {
                         out.writeUTF(command);
                         sendFile(server, messages[1]);
                         break;
-                    // receive hinh.jpg
+                    // receivefile hinh.jpg
                     case "/receivefile":
                         if (recvFile(server, messages[1])) {
                             System.out.println("Receving file successfully");
@@ -253,7 +253,7 @@ public class Client {
         }
     }
 
-    public static void sendFile(Socket server, String src) {
+    public static void sendFile(Socket server, String src)throws IOException  {
         try {
             fout = new ObjectOutputStream(server.getOutputStream());
             fout.flush();
@@ -268,7 +268,7 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-
+           
         }
     }
 

@@ -34,7 +34,6 @@ public class ClientHandle implements Runnable {
         this.rooms = rooms;
         this.in = new DataInputStream(client.getInputStream());
         this.out = new DataOutputStream(client.getOutputStream());
-
     }
 
     boolean checkSignUp(String username, String password) throws IOException {
@@ -294,11 +293,12 @@ public class ClientHandle implements Runnable {
             // this.fout = new ObjectOutputStream(client.getOutputStream());
             newFile = (file) fin.readObject();
             if (newFile != null) {
-                newFile.setDestinationDirectory("./database/");
+                newFile.setDestinationDirectory("./src/database/");
                 newFile.setCommunication(this.getUsername(), "all");
                 newFile.createFile();
                 // save to json
-                try ( FileReader reader = new FileReader("./database/fileList.json")) {
+                try ( FileReader reader = new FileReader("./src/database/fileList.json")) {
+                   
                     // Read JSON file
                     JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
                     if (obj == null) {
@@ -317,7 +317,8 @@ public class ClientHandle implements Runnable {
 
                     obj.add(temp);
 
-                    writer = new FileWriter("./database/fileList.json", false);
+                    writer = new FileWriter("./src/database/fileList.json", false);
+    
                     gson.toJson(obj, writer);
                 } catch (Exception e) {
                     e.printStackTrace();

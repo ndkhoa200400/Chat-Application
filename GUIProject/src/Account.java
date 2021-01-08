@@ -41,11 +41,12 @@ public class Account {
         return this.password.equals(p);
     }
    
-    public static String setMode(String username) {
-        if (username.startsWith("S")) {
+    public static String setMode(String name) {
+        System.out.println(username);
+        if (name.startsWith("S")) {
             mode = "Student";
         }
-        if (username.startsWith("T")) {
+        if (name.startsWith("T")) {
             mode = "Teacher";
         } else {
             mode = "Staff";
@@ -56,12 +57,15 @@ public class Account {
     static String setAvatarPath(String mode){
         if (mode.equals("Student")) {
             avatar_img = "./src/database/user_img/student.png";
+     
         }
         if (username.equals("Teacher")) {
             avatar_img =  "./src/database/user_img/teacher.png";
+
         }
         else{
             avatar_img ="./src/database/user_img/staff.png";
+
         }
         return avatar_img;
     }
@@ -131,20 +135,6 @@ public class Account {
         return false;
     }
 
-    // static void signUp(String username, String password)
-    // {
-    // BufferedWriter writer = null;
-    // try {
-    // writer = new BufferedWriter(new FileWriter("./database/accounts.json",
-    // true));
-    // writer.write(username +"\n" + password + "\n");
-    // writer.close();
-    // } catch (IOException e) {
-    // System.out.println("Exception occurred:");
-    // e.printStackTrace();
-    // }
-    // }
-
     static void signUp(String username, String password) throws IOException {
         FileWriter writer = null;
         try{
@@ -211,6 +201,7 @@ public class Account {
             e.printStackTrace();
         }finally{
             writer.close();
+
         }
     }
 
@@ -238,9 +229,9 @@ public class Account {
                 // obj.add(temp);
                 writer = new FileWriter("./src/database/accounts.json", false);
                 gson.toJson(obj, writer);
-        } catch (Exception e) {
-        }}catch(Exception e)
+        } }catch(Exception e)
         {
+            e.getStackTrace();
         }finally{
             writer.close();
         }
