@@ -23,7 +23,7 @@ public class Client {
     private static ObjectOutputStream fout; // send bytes of file to server
     private static ObjectInputStream fin;
     public static Account account;
-    private static Socket server;
+    public static Socket server;
 
 
     public static boolean logIn(String username, String password) throws IOException, ClassNotFoundException {

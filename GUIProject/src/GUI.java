@@ -94,6 +94,7 @@ public class GUI extends javax.swing.JFrame implements Runnable {
         listAttach = new javax.swing.JList<>();
         jLabel4 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
+        saveAttachBtn = new javax.swing.JButton();
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -605,10 +606,18 @@ public class GUI extends javax.swing.JFrame implements Runnable {
         });
 
         listAttach.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        listAttach.setModel(fileListModel);
         jScrollPane5.setViewportView(listAttach);
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel4.setText("List attachments");
+
+        saveAttachBtn.setText("Save");
+        saveAttachBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                saveAttachBtnMouseReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -621,8 +630,10 @@ public class GUI extends javax.swing.JFrame implements Runnable {
                         .addComponent(outbtn, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jLabel4)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(saveAttachBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(11, Short.MAX_VALUE))
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -640,12 +651,9 @@ public class GUI extends javax.swing.JFrame implements Runnable {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addGap(0, 37, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                                .addComponent(avaLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(41, 41, 41))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                                .addComponent(changeAvabtn)
-                                .addGap(41, 41, 41))))))
+                            .addComponent(avaLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(changeAvabtn, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(41, 41, 41))))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -660,7 +668,9 @@ public class GUI extends javax.swing.JFrame implements Runnable {
                 .addGap(10, 10, 10)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(10, 10, 10)
-                .addComponent(jLabel4)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(saveAttachBtn))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -762,7 +772,12 @@ public class GUI extends javax.swing.JFrame implements Runnable {
                 // if send to public chat => mess :"username: msg"
                 // res[0]: destication
                 // res[1]: username: msg
-                System.out.println("sendfile " + mess);
+                System.out.println("Received message: " + mess);
+                
+                if(mess == null){
+                    System.out.println("!! Message from server is null.");
+                    break;
+                }
                 
                 String res[] = mess.split("-");
                 String destination = "0";
@@ -823,19 +838,17 @@ public class GUI extends javax.swing.JFrame implements Runnable {
                             showOnline(mess.substring(usersIndex + 1));
                             break;
                         case "sendfile": //add files have been sent to {listAtt}
-                            System.out.println("sendfile " + mess);
                             String newMess = response[1] + " has sent a new file: " + response[2];
                             this.insertTextToPane(newMess, name, "left", this.screenStateHash.get(0));
                             //then add to listAtt
-                            //void addToListAtt(String fileName); fileName has been split from filePath(response[2]).
-                            
+                            this.fileListModel.addElement(response[2]);
                             break;
-                        case "receive": //download the selected file in listAtt
-                            //get the selected fileName in listAtt
-                            //then send it to sever
-                            //Client.sendFile(server, fileName);
-                            
-                            break;
+//                        case "receivefile": //download the selected file in listAtt
+//                            //get the selected fileName in listAtt
+//                            //then send it to sever
+//                            //Client.sendFile(server, fileName);
+//                            
+//                            break;
                         default:
                             insertTextToPane(mess, name, "left", this.screenStateHash.get(0));
                     }
@@ -881,11 +894,15 @@ public class GUI extends javax.swing.JFrame implements Runnable {
         int value = chooser.showOpenDialog(this);
         if (value == JFileChooser.APPROVE_OPTION) {
             File file = chooser.getSelectedFile();
-            String filePath = file.getAbsolutePath();
+            String filePath = file.getPath();
             if (!filePath.isEmpty()) {
-                //gui file
-                String mess = "/sendfile " + filePath;
-                Client.send(mess);
+                try {
+                    //gui file
+                    Client.send("/sendfile " +filePath);
+                    Client.sendFile(Client.server, filePath);
+                } catch (IOException ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
         //sau khi send file thanh cong - add file vao listAttach
@@ -1136,6 +1153,26 @@ public class GUI extends javax.swing.JFrame implements Runnable {
             sendButtonMouseClicked(evt1);
         }
     }//GEN-LAST:event_messageTypeKeyReleased
+
+    private void saveAttachBtnMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveAttachBtnMouseReleased
+        // TODO add your handling code here:
+        String nameFile = this.listAttach.getSelectedValue();
+        if(nameFile == null || nameFile.isEmpty()){
+            this.wrongInputFrame.setSize(320, 150);
+            javax.swing.JLabel msgErr = new javax.swing.JLabel("Please select a file to save.");
+            msgErr.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 14));
+            msgErr.setBounds(20, this.wrongInputFrame.getHeight() / 5, 300, 50);
+            this.wrongInputFrame.add(msgErr);
+            msgErr.setBackground(Color.white);
+            msgErr.setVisible(true);
+            this.wrongInputFrame.setLocationRelativeTo(this);
+            this.wrongInputFrame.setVisible(true);
+        }
+        else{
+            Client.send("/receivefile " + nameFile);
+            //Client.recvFile(Client.server, nameFile);
+        }
+    }//GEN-LAST:event_saveAttachBtnMouseReleased
     private String formatMessage(String mess) {
         int count = 0;
         for (int i = 0; i < mess.length(); i++) {
@@ -1189,6 +1226,7 @@ public class GUI extends javax.swing.JFrame implements Runnable {
 
     javax.swing.DefaultListModel<String> listModel = new javax.swing.DefaultListModel<>();
     javax.swing.DefaultListModel<String> userListModel = new javax.swing.DefaultListModel<>();
+    javax.swing.DefaultListModel<String> fileListModel = new javax.swing.DefaultListModel<>();
 
     private final HashMap<Integer, JTextPane> screenStateHash = new HashMap<>();    // Mapping from id of a room to chatting screen
     private final HashMap<String, Integer> roomNameHash = new HashMap<>();  // Mapping from name of a room to its id
@@ -1240,6 +1278,7 @@ public class GUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JFrame peopleOnlineFrame;
     private javax.swing.JList<String> roomList;
     private javax.swing.JPanel roomPanel;
+    private javax.swing.JButton saveAttachBtn;
     private javax.swing.JTextPane screenMessagePane;
     private javax.swing.JButton sendAttachment;
     private javax.swing.JButton sendButton;

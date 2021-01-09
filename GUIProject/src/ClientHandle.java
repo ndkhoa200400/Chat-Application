@@ -125,6 +125,16 @@ public class ClientHandle implements Runnable {
             e.printStackTrace();
         }
     }
+    
+    private String getNameFileFromString(String filePath){
+        int index = 0;
+        for(int i = 0; i < filePath.length(); i++){
+            if(filePath.charAt(i) == 92 || filePath.charAt(i) == ':'){
+                index = i;
+            }
+        }
+        return  filePath.substring(index + 1);
+    }
 
     @Override
     public void run() {
@@ -185,12 +195,20 @@ public class ClientHandle implements Runnable {
                             //request = account.getUserName() + " has already sent a new attachment.";
                             System.out.println("Client handle: path file: " + request.substring(indexOfCommand + 1));
                             if (recvFile(this.client, request.substring(indexOfCommand + 1))) {
-                                this.out.writeUTF("sendfile " + account.getUserName() + " " + request.substring(indexOfCommand + 1));
+                                String nameFile = getNameFileFromString(request.substring(indexOfCommand + 1));
+                                sendToAll("sendfile " + this.account.getUserName() + " " + nameFile);
+                                this.out.writeUTF("sendfile " + this.account.getUserName() + " " + nameFile);
                             } else {
                                 this.out.writeUTF("Failed to send file");
                             }
                             break;
-
+                        case "receivefile":
+                            
+                            sendFile(this.client, request.substring(indexOfCommand + 1));
+                            this.out.writeUTF(this.account.getUserName() + "has downloaded " + request.substring(indexOfCommand + 1));
+                            sendToAll(this.account.getUserName() + "has downloaded " + request.substring(indexOfCommand + 1));
+                            System.out.println(request.substring(indexOfCommand + 1) + " has been downloaded");
+                            break;
                         case "receivefile hinh.jpg":
                             sendFile(this.client, request.substring(indexOfCommand + 1));
                             break;
@@ -200,7 +218,7 @@ public class ClientHandle implements Runnable {
                                 if (r.getParticipants().contains(this)) {
                                     out.writeInt(r.getID());
                                 }
-                            }
+                            }   
                             break;
                         case "showonlineroom":
                             RoomChat r = rooms.get(Integer.parseInt(request.substring(indexOfCommand + 1)));
@@ -224,7 +242,7 @@ public class ClientHandle implements Runnable {
                             break;
                     }
                 } else {
-                    request = account.getUserName() + ": " + request;
+                    request = this.account.getUserName() + ": " + request;
                     sendToAll(request);
                 }
 
@@ -389,7 +407,8 @@ public class ClientHandle implements Runnable {
     }
 
     void sendToAll(String msg) throws IOException {
-        if (msg.equals("null")) {
+        if (msg.equals("null") || msg == null || msg.isEmpty()) {
+            System.out.println("!! Clienthandle: message in sendToAll is null.");
             return;
         }
         for (ClientHandle clientHandle : clients) {
