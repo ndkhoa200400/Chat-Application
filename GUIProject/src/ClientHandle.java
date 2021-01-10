@@ -140,9 +140,12 @@ public class ClientHandle implements Runnable {
     public void run() {
         // Check status of sign up or log in 
         preJoining();
-
+        for (ClientHandle client1 : clients) {
+            System.out.println(client1.account.getUserName());
+        }
         // Method to send client's msg to others parallel
         try {
+          
             sendToAll(this.getUsername() + " has joined");
             this.out.writeUTF("welcome to forum!");
             while (true) {
