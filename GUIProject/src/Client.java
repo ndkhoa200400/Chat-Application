@@ -1,10 +1,12 @@
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.Socket;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -204,12 +206,14 @@ public class Client {
                         out.writeUTF(command);
                         sendFile(server, messages[1]);
                         break;
-                    // receivefile hinh.jpg
-                    case "/receivefile":
-                        if (recvFile(server, messages[1])) {
-                            System.out.println("Receving file successfully");
-                        }
+//                     //recv hinh.jpg
+                    case "/receive":
+                    	out.writeUTF(command);
                         break;
+                    case "/showonline":
+                        System.out.println(in.readUTF());
+                        break;
+                        
                     default:
                         out.writeUTF("Command is invalid");
                         break;
@@ -225,7 +229,7 @@ public class Client {
         try {
            
             String serverResponse = in.readUTF();
-            
+           
             return serverResponse;
             
         } catch (Exception e) {
@@ -239,7 +243,14 @@ public class Client {
         try {
             while (true) {
                 String serverResponse = in.readUTF();
-                System.out.println(serverResponse);
+                if (serverResponse.equals("Prepare nhan file ne")) {
+                	//prepare to receive file
+                	if (recvFile(server)) {
+                        System.out.println("Receving file successfully");
+                    }
+                }
+                else
+                	System.out.println(serverResponse);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -255,15 +266,21 @@ public class Client {
 
     public static void sendFile(Socket server, String src)throws IOException  {
         try {
-            fout = new ObjectOutputStream(server.getOutputStream());
-            fout.flush();
+            //fout = new ObjectOutputStream(server.getOutputStream());
+            //fout.flush();
             // get file info
             file fileInfo = new file();
             fileInfo.getFileInfo(src);
-
+            
             // send file content
-            fout.writeObject(fileInfo);
-            fout.flush();
+            out.writeInt(fileInfo.getDataBytes().length);
+            out.write(fileInfo.getDataBytes(), 0, fileInfo.getDataBytes().length);
+            out.writeUTF(fileInfo.getFilename());
+    		out.writeUTF(fileInfo.getFileType());
+    		out.writeLong(fileInfo.getLastModified());
+    		out.flush();
+            //fout.writeObject(fileInfo);
+            //fout.flush();
             System.out.println("Sent successfully");
         } catch (Exception e) {
             e.printStackTrace();
@@ -272,24 +289,52 @@ public class Client {
         }
     }
 
-    public static boolean recvFile(Socket server, String src) throws IOException {
-        file newFile;
+    public static boolean recvFile(Socket server) throws IOException {
+        file newFile = new file();
         boolean isValid = false;
-        fin = new ObjectInputStream(server.getInputStream());
+        BufferedOutputStream bos = null;
+        System.out.println("Downloading");
+    
         try {
-
             // this.fout = new ObjectOutputStream(client.getOutputStream());
-            newFile = (file) fin.readObject();
+            //newFile = (file) fin.readObject();
+        	//in.readInt();
+        	int length = in.readInt();
+
+        	byte[] bytearray =  new byte[length];
+        	int byteReads = in.read(bytearray, 0, length);
+        	System.out.println(byteReads);
+        	newFile.setDataBytes(bytearray);
+        	newFile.setFilename(in.readUTF());
+        	newFile.setFileType(in.readUTF());
+        	
+        	String recv = in.readUTF();
+        	String sender = in.readUTF();
+        	newFile.setCommunication(sender, recv);
+        	newFile.setLastModified(in.readLong());
+        	newFile.setDestinationDirectory("D:");
+        
             if (newFile != null) {
-                newFile.createFile();
+            	 File fileRecv = new File(
+                         newFile.getDestinationDirectory() + newFile.getSender() + "_" + newFile.getRecver()+"_"+ newFile.getFilename());
+            	 bos = new BufferedOutputStream(new FileOutputStream(fileRecv));
+                 // write file content
+                 bos.write(bytearray);
+                 bos.flush();
+                
                 // send confirmation
+            	
                 newFile.setStatus("Success");
                 isValid = true;
+                System.out.println("Downloaded! ");
+         
+                bos.close();
             }
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+       
         return isValid;
     }
     
