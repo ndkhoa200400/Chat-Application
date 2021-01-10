@@ -16,6 +16,7 @@ class Server {
     private static final int PORT = 9090;
     private static ArrayList<ClientHandle> clients = new ArrayList<>();
     private static HashMap<Integer, RoomChat> rooms = new HashMap<>();
+    private static ArrayList<file> fileList  = new ArrayList<>(); 
     
     private static ExecutorService pool = Executors.newFixedThreadPool(8);
 
@@ -28,7 +29,7 @@ class Server {
             Socket client = listener.accept();
             System.err.println("Client " + client  + " has connected");
 
-            ClientHandle clientThread = new ClientHandle(client, clients, rooms);
+            ClientHandle clientThread = new ClientHandle(client, clients, rooms,fileList);
             clients.add(clientThread);
             
             // Create new theard to handle new client

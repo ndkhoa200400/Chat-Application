@@ -28,13 +28,14 @@ public class ClientHandle implements Runnable {
     // Private room chat
     private final HashMap<Integer, RoomChat> rooms;
 
-    ClientHandle(Socket clientSocker, ArrayList<ClientHandle> clients, HashMap<Integer, RoomChat> rooms)
+    ClientHandle(Socket clientSocker, ArrayList<ClientHandle> clients, HashMap<Integer, RoomChat> rooms,ArrayList<file> Lists)
             throws IOException {
         this.clients = clients;
         this.client = clientSocker;
         this.rooms = rooms;
         this.in = new DataInputStream(client.getInputStream());
         this.out = new DataOutputStream(client.getOutputStream());
+        this.fileList = Lists;
     }
 
     boolean checkSignUp(String username, String password) throws IOException {
