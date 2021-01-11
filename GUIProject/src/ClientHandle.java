@@ -266,7 +266,7 @@ public class ClientHandle implements Runnable {
             }
             clients.remove(this);
             try {
-                //sendToAll(this.account.getUserName() + " has left!");
+                sendToAll(this.account.getUserName() + " has left!");
                 out.close();
                 in.close();
                 this.client.close();

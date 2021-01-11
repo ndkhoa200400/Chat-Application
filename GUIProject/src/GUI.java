@@ -1131,7 +1131,13 @@ public class GUI extends javax.swing.JFrame implements Runnable {
     }
 
     private void outbtnMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_outbtnMouseReleased
-        Client.send("/out");
+        Client.send("null");
+        try {
+			Client.server.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         dispose();
     }//GEN-LAST:event_outbtnMouseReleased
 
