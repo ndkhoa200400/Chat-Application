@@ -24,11 +24,10 @@ public class ClientHandle implements Runnable {
     private ArrayList<file> fileList = new ArrayList<file>();
     private Gson gson = new Gson();
 
-
     // Private room chat
     private final HashMap<Integer, RoomChat> rooms;
 
-    ClientHandle(Socket clientSocker, ArrayList<ClientHandle> clients, HashMap<Integer, RoomChat> rooms,ArrayList<file> Lists)
+    ClientHandle(Socket clientSocker, ArrayList<ClientHandle> clients, HashMap<Integer, RoomChat> rooms, ArrayList<file> Lists)
             throws IOException {
         this.clients = clients;
         this.client = clientSocker;
@@ -119,7 +118,7 @@ public class ClientHandle implements Runnable {
                 if (isAccountValid) {
                     this.out.writeUTF("true");
                     account = new Account(username, password);
-                   
+
                 } else {
                     this.out.writeUTF("false");
                 }
@@ -127,6 +126,16 @@ public class ClientHandle implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getNameFileFromString(String filePath) {
+        int index = 0;
+        for (int i = 0; i < filePath.length(); i++) {
+            if (filePath.charAt(i) == 92 || filePath.charAt(i) == ':') {
+                index = i;
+            }
+        }
+        return filePath.substring(index + 1);
     }
 
     @Override
@@ -150,7 +159,7 @@ public class ClientHandle implements Runnable {
                     request = request.substring(1);
                     int indexOfCommand = request.indexOf(" ");
                     String command = request.substring(0, indexOfCommand);
-                    
+
                     switch (command) {
                         // Command: /showonline id_room
                         // id_room = 0 if it is a public room
@@ -189,14 +198,16 @@ public class ClientHandle implements Runnable {
                             //request = account.getUserName() + " has already sent a new attachment.";
                             System.out.println("Client handle: path file: " + request.substring(indexOfCommand + 1));
                             if (recvFile(this.client, request.substring(indexOfCommand + 1))) {
-                                this.out.writeUTF("sendfile " + account.getUserName() + " " + request.substring(indexOfCommand + 1));
+                                String nameFile = getNameFileFromString(request.substring(indexOfCommand + 1));
+                                sendToAll("sendfile " + this.account.getUserName() + " " + nameFile);
+                                this.out.writeUTF("sendfile " + this.account.getUserName() + " " + nameFile);
                             } else {
                                 this.out.writeUTF("Failed to send file");
                             }
                             break;
 
                         case "receive":
-                        	System.out.println("request send path file: " + request.substring(indexOfCommand + 1));
+                            System.out.println("request send path file: " + request.substring(indexOfCommand + 1));
                             sendFile(this.client, request.substring(indexOfCommand + 1));
                             break;
 
@@ -228,7 +239,11 @@ public class ClientHandle implements Runnable {
                             this.out.writeUTF("Command is invalid");
                             break;
                     }
-                } else {
+                }
+                else if(request.equals("Receiving file successfully")){
+                    this.out.writeUTF("The file has been downloaded to your local disk");
+                }
+                else {
                     request = account.getUserName() + ": " + request;
                     sendToAll(request);
                 }
@@ -269,45 +284,44 @@ public class ClientHandle implements Runnable {
     }
 
     public void sendFile(Socket server, String fileName) {
-    	byte[] bytearray ;
-    	boolean isExisted = false;
+        byte[] bytearray;
+        boolean isExisted = false;
         try {
-        
+
 //            fout = new ObjectOutputStream(server.getOutputStream());
 //            fout.flush();
             // fin = new ObjectInputStream(server.getInputStream());
             for (file x : fileList) {
-         
+
                 if (x.getFilename().equals(fileName)) {
-                		
-                		bytearray = x.getDataBytes();
-                	
-                		out.writeUTF("Prepare nhan file ne");
-                		out.writeInt(bytearray.length);
-                		out.write(bytearray, 0, bytearray.length);
-                		out.writeUTF(x.getFilename());
-                		out.writeUTF(x.getFileType());
-                		out.writeUTF(x.getRecver());
-                		out.writeUTF(x.getSender());
-                		out.writeLong(x.getLastModified());
-                		
-                		System.out.println("Sent file! ");
-                		isExisted = true;
-                		out.flush();
+
+                    bytearray = x.getDataBytes();
+
+                    out.writeUTF("The file is downloading");
+                    out.writeInt(bytearray.length);
+                    out.write(bytearray, 0, bytearray.length);
+                    out.writeUTF(x.getFilename());
+                    out.writeUTF(x.getFileType());
+                    out.writeUTF(x.getRecver());
+                    out.writeUTF(x.getSender());
+                    out.writeLong(x.getLastModified());
+
+                    System.out.println("Sent file! ");
+                    isExisted = true;
+                    out.flush();
                     // send file content
                     //fout.writeObject(x);
                     //fout.flush();
                 }
             }
             if (isExisted == false) {
-            	out.writeUTF("Not matching result");
+                out.writeUTF("Not matching result");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    
-    }
 
+    }
 
     boolean recvFile(Socket client, String src) throws IOException {
         file newFile = new file();
@@ -316,68 +330,65 @@ public class ClientHandle implements Runnable {
         BufferedOutputStream bos = null;
         FileWriter writer = null;
         try {
-	        	int length = in.readInt();
-	        	byte[] bytearray =  new byte[length];
-	        	int byteReads = in.read(bytearray, 0, length);
-	        	newFile.setDataBytes(bytearray);
-	        	newFile.setFilename(in.readUTF());
-	        	newFile.setFileType(in.readUTF());
-	        	newFile.setLastModified(in.readLong());
-   
-            
-                newFile.setDestinationDirectory("./src/database/");
-                newFile.setCommunication(this.getUsername(), "all");
-                //newFile.createFile();
-                if (newFile != null) {
-               	 File fileRecv = new File(newFile.getDestinationDirectory() + newFile.getSender() + "_" + newFile.getRecver()+"_"+ newFile.getFilename());
-               	 bos = new BufferedOutputStream(new FileOutputStream(fileRecv));
-                    // write file content
-                    bos.write(bytearray);
-                    bos.flush();
+            int length = in.readInt();
+            byte[] bytearray = new byte[length];
+            int byteReads = in.read(bytearray, 0, length);
+            newFile.setDataBytes(bytearray);
+            newFile.setFilename(in.readUTF());
+            newFile.setFileType(in.readUTF());
+            newFile.setLastModified(in.readLong());
+
+            newFile.setDestinationDirectory("./src/database/");
+            newFile.setCommunication(this.getUsername(), "all");
+            //newFile.createFile();
+            if (newFile != null) {
+                File fileRecv = new File(newFile.getDestinationDirectory() + newFile.getSender() + "_" + newFile.getRecver() + "_" + newFile.getFilename());
+                bos = new BufferedOutputStream(new FileOutputStream(fileRecv));
+                // write file content
+                bos.write(bytearray);
+                bos.flush();
+            }
+            // save to json
+            try ( FileReader reader = new FileReader("./src/database/fileList.json")) {
+
+                // Read JSON file
+                JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
+                if (obj == null) {
+                    obj = new JsonArray();
                 }
-                // save to json
-                try ( FileReader reader = new FileReader("./src/database/fileList.json")) {
-                   
-                    // Read JSON file
-                    JsonArray obj = (JsonArray) gson.fromJson(reader, JsonArray.class);
-                    if (obj == null) {
-                        obj = new JsonArray();
-                    }
-                    JsonObject temp = new JsonObject();
+                JsonObject temp = new JsonObject();
 
-                    temp.addProperty("name", newFile.getFilename());
-                    temp.addProperty("type", newFile.getFileType());
-                    temp.addProperty("des", newFile.getDestinationDirectory());
-                    temp.addProperty("size", newFile.getFileSize());
-                    temp.addProperty("size", newFile.getFileSize());
-                    temp.addProperty("date", gson.toJson(newFile.getDate()));
-                    temp.addProperty("sender", newFile.getSender());
-                    temp.addProperty("receiver", newFile.getRecver());
+                temp.addProperty("name", newFile.getFilename());
+                temp.addProperty("type", newFile.getFileType());
+                temp.addProperty("des", newFile.getDestinationDirectory());
+                temp.addProperty("size", newFile.getFileSize());
+                temp.addProperty("size", newFile.getFileSize());
+                temp.addProperty("date", gson.toJson(newFile.getDate()));
+                temp.addProperty("sender", newFile.getSender());
+                temp.addProperty("receiver", newFile.getRecver());
 
-                    obj.add(temp);
+                obj.add(temp);
 
-                    writer = new FileWriter("./src/database/fileList.json", false);
-    
-                    gson.toJson(obj, writer);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    writer.close();
-                   
-                }
-                // send confirmation
-                newFile.setStatus("Success");
-                isValid = true;
-                fileList.add(newFile);
-            
-        } catch ( IOException e) {
+                writer = new FileWriter("./src/database/fileList.json", false);
+
+                gson.toJson(obj, writer);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                writer.close();
+
+            }
+            // send confirmation
+            newFile.setStatus("Success");
+            isValid = true;
+            fileList.add(newFile);
+
+        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return isValid;
     }
-
-   
 
     void sendToRoom(String message) throws IOException {
         // message= "room_id: msg"

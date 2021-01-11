@@ -1169,7 +1169,7 @@ public class GUI extends javax.swing.JFrame implements Runnable {
             this.wrongInputFrame.setVisible(true);
         }
         else{
-            Client.send("/receivefile " + nameFile);
+            Client.send("/receive " + nameFile);
             //Client.recvFile(Client.server, nameFile);
         }
     }//GEN-LAST:event_saveAttachBtnMouseReleased

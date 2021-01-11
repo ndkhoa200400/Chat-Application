@@ -27,7 +27,6 @@ public class Client {
     public static Account account;
     public static Socket server;
 
-
     public static boolean logIn(String username, String password) throws IOException, ClassNotFoundException {
         boolean isAccountValid = false;
 
@@ -208,12 +207,12 @@ public class Client {
                         break;
 //                     //recv hinh.jpg
                     case "/receive":
-                    	out.writeUTF(command);
+                        out.writeUTF(command);
                         break;
                     case "/showonline":
                         System.out.println(in.readUTF());
                         break;
-                        
+
                     default:
                         out.writeUTF("Command is invalid");
                         break;
@@ -224,33 +223,42 @@ public class Client {
         }
     }
 
-     static String listen() {
+    static String listen() {
 
         try {
-           
+
             String serverResponse = in.readUTF();
-           
+            if (serverResponse.equals("The file is downloading")) {
+                //prepare to receive file
+                if (recvFile(server)) {
+                    System.out.println("Receiving file successfully");
+                    send("Receiving file successfully");
+                }
+            } else {
+                System.out.println(serverResponse);
+            }
             return serverResponse;
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
-    
+
     static void listen(Socket server) {
 
         try {
             while (true) {
                 String serverResponse = in.readUTF();
-                if (serverResponse.equals("Prepare nhan file ne")) {
-                	//prepare to receive file
-                	if (recvFile(server)) {
+                if (serverResponse.equals("The file is downloading")) {
+                    //prepare to receive file
+                    if (recvFile(server)) {
                         System.out.println("Receving file successfully");
+                        out.writeUTF("The file has been downloaded to your local disk");
                     }
+                } else {
+                    System.out.println(serverResponse);
                 }
-                else
-                	System.out.println(serverResponse);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -264,28 +272,28 @@ public class Client {
         }
     }
 
-    public static void sendFile(Socket server, String src)throws IOException  {
+    public static void sendFile(Socket server, String src) throws IOException {
         try {
             //fout = new ObjectOutputStream(server.getOutputStream());
             //fout.flush();
             // get file info
             file fileInfo = new file();
             fileInfo.getFileInfo(src);
-            
+
             // send file content
             out.writeInt(fileInfo.getDataBytes().length);
             out.write(fileInfo.getDataBytes(), 0, fileInfo.getDataBytes().length);
             out.writeUTF(fileInfo.getFilename());
-    		out.writeUTF(fileInfo.getFileType());
-    		out.writeLong(fileInfo.getLastModified());
-    		out.flush();
+            out.writeUTF(fileInfo.getFileType());
+            out.writeLong(fileInfo.getLastModified());
+            out.flush();
             //fout.writeObject(fileInfo);
             //fout.flush();
             System.out.println("Sent successfully");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-           
+
         }
     }
 
@@ -294,52 +302,50 @@ public class Client {
         boolean isValid = false;
         BufferedOutputStream bos = null;
         System.out.println("Downloading");
-    
+
         try {
             // this.fout = new ObjectOutputStream(client.getOutputStream());
             //newFile = (file) fin.readObject();
-        	//in.readInt();
-        	int length = in.readInt();
+            //in.readInt();
+            int length = in.readInt();
 
-        	byte[] bytearray =  new byte[length];
-        	int byteReads = in.read(bytearray, 0, length);
-        	System.out.println(byteReads);
-        	newFile.setDataBytes(bytearray);
-        	newFile.setFilename(in.readUTF());
-        	newFile.setFileType(in.readUTF());
-        	
-        	String recv = in.readUTF();
-        	String sender = in.readUTF();
-        	newFile.setCommunication(sender, recv);
-        	newFile.setLastModified(in.readLong());
-        	newFile.setDestinationDirectory("D:");
-        
+            byte[] bytearray = new byte[length];
+            int byteReads = in.read(bytearray, 0, length);
+            System.out.println(byteReads);
+            newFile.setDataBytes(bytearray);
+            newFile.setFilename(in.readUTF());
+            newFile.setFileType(in.readUTF());
+
+            String recv = in.readUTF();
+            String sender = in.readUTF();
+            newFile.setCommunication(sender, recv);
+            newFile.setLastModified(in.readLong());
+            newFile.setDestinationDirectory("D:");
+
             if (newFile != null) {
-            	 File fileRecv = new File(
-                         newFile.getDestinationDirectory() + newFile.getSender() + "_" + newFile.getRecver()+"_"+ newFile.getFilename());
-            	 bos = new BufferedOutputStream(new FileOutputStream(fileRecv));
-                 // write file content
-                 bos.write(bytearray);
-                 bos.flush();
-                
+                File fileRecv = new File(
+                        newFile.getDestinationDirectory() + newFile.getSender() + "_" + newFile.getRecver() + "_" + newFile.getFilename());
+                bos = new BufferedOutputStream(new FileOutputStream(fileRecv));
+                // write file content
+                bos.write(bytearray);
+                bos.flush();
+
                 // send confirmation
-            	
                 newFile.setStatus("Success");
                 isValid = true;
                 System.out.println("Downloaded! ");
-         
+
                 bos.close();
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-       
+
         return isValid;
     }
-    
-    public static void close()
-    {
+
+    public static void close() {
         try {
             server.close();
             out.close();
