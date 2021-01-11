@@ -46,7 +46,7 @@ public class Account {
         if (name.startsWith("S")) {
             mode = "Student";
         }
-        else if (name.startsWith("T")) {
+        if (name.startsWith("T")) {
             mode = "Teacher";
         } else {
             mode = "Staff";

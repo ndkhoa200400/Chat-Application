@@ -241,8 +241,6 @@ public class GUI extends javax.swing.JFrame implements Runnable {
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("A small project from Vanism");
         jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 260, 40));
-
-        label.setIcon(new javax.swing.ImageIcon("./src/database/user_img/1547582.jpg")); // NOI18N
         jPanel3.add(label, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 410, 410));
 
         javax.swing.GroupLayout loginFrameLayout = new javax.swing.GroupLayout(loginFrame.getContentPane());

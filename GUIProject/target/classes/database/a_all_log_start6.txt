@@ -1,0 +1,10 @@
+[2020.12.30 14:28:28] Launched version: 2005002, install beta: [TRUE], alpha: 0, debug mode: [FALSE]
+[2020.12.30 14:28:28] Executable dir: D:/tportable.2.2.0/Telegram/, name: Telegram.exe
+[2020.12.30 14:28:28] Initial working dir: D:/tportable.2.2.0/Telegram/
+[2020.12.30 14:28:28] Working dir: D:/tportable.2.2.0/Telegram/
+[2020.12.30 14:28:28] Command line: D:\tportable.2.2.0\Telegram\Telegram.exe
+[2020.12.30 14:28:27] Executable path before check: D:/tportable.2.2.0/Telegram/Telegram.exe
+[2020.12.30 14:28:28] Logs started
+[2020.12.30 14:28:28] Connecting local socket to Global\e2a09f050debc5de3fca9a10a182c477-{87A94AB0-E370-4cde-98D3-ACC110C5967D}...
+[2020.12.30 14:28:28] This is the only instance of Telegram, starting server and app...
+[2020.12.30 14:28:28] Could not copy 'D:/tportable.2.2.0/Telegram/log_start6.txt' to 'D:/tportable.2.2.0/Telegram/log.txt' to start new logging!

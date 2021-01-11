@@ -102,8 +102,12 @@
     </Container>
     <Container class="javax.swing.JFrame" name="loginFrame">
       <Properties>
-        <Property name="defaultCloseOperation" type="int" value="2"/>
+        <Property name="defaultCloseOperation" type="int" value="3"/>
+        <Property name="title" type="java.lang.String" value="Welcome"/>
       </Properties>
+      <Events>
+        <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="loginFrameWindowClosing"/>
+      </Events>
 
       <Layout>
         <DimensionLayout dim="0">
